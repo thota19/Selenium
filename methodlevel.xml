@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite parallel="methods" name="methodlevel1" thread-count="2">
+  <test   name="Test1">
+    <classes>
+		
+      <class name="parallellevelexecutions.ClasssA"/>
+     
+      
+    </classes>
+  </test> <!-- Test1 -->
+  
+  <test   name="Test2">
+    <classes>
+		
+   
+      <class name="parallellevelexecutions.ClassB"/>
+      
+    </classes>
+  </test> <!-- Test1 -->
+  
+</suite> <!-- classlevel1 -->

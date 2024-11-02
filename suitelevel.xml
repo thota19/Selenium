@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite thread-count="3" name="Suitelevel" parallel="true">
+  <suite-files>
+	  <suite-file path="classlevel.xml"></suite-file>
+	  <suite-file path="methodlevel.xml"></suite-file>
+  </suite-files>
+</suite> <!-- Suitelevel -->

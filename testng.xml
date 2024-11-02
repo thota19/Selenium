@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Type of Testings" parallel="methods" thread-count="3" >
+<listeners>
+
+
+
+	</listeners>
+<test thread-count="3" name="Test">
+		<parameter name="Browser" value="Chrome" />
+		
+		<classes>
+		<!-- class name="Test.TestCasesController" -->
+			<!-- class name="Test.LoginSteps" / -->
+			<class name="test.TestCaseController" />
+		</classes>
+
+	</test> <!-- Test -->
+</suite>

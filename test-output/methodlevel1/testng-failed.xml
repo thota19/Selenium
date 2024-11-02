@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite thread-count="2" parallel="methods" name="Failed suite [methodlevel1]" guice-stage="DEVELOPMENT">
+  <test thread-count="2" parallel="methods" name="Test2(failed)">
+    <classes>
+      <class name="parallellevelexecutions.ClassB">
+        <methods>
+          <include name="closeBrowser"/>
+          <include name="loadBrowser"/>
+          <include name="youtube"/>
+        </methods>
+      </class> <!-- parallellevelexecutions.ClassB -->
+    </classes>
+  </test> <!-- Test2(failed) -->
+</suite> <!-- Failed suite [methodlevel1] -->
