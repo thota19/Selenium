@@ -1,0 +1,2400 @@
+package stepdefinition;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import org.w3c.dom.*;
+import javax.xml.parsers.*;
+import java.io.*;
+import org.testng.Assert;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.GherkinKeyword;
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.gherkin.model.Feature;
+import com.aventstack.extentreports.gherkin.model.Scenario;
+import com.experitest.client.Client;
+
+import Objects.AvailabilityObjects;
+import Objects.ShiftOfferObjects;
+import Test.TestCaseController;
+import api.APIHandshake;
+import api.Request;
+import api.RequestHandler;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import utils.CommonFunctions;
+import utils.CommonFunctions_Mobile;
+import utils.SuiteLevelVariables;
+import utils.TestSuiteMethods;
+
+public class OfferShift1 extends CommonFunctions_Mobile{
+
+	public static TestCaseController testCaseController = new TestCaseController();
+	Client client= TestSuiteMethods.getIosClient();
+	ShiftOfferObjects shiftObjects = new ShiftOfferObjects();
+	public static CommonStepDefnitions commonStepDefnitions = new CommonStepDefnitions();
+	public static CommonFunctions_Mobile commonFuncMobile = new CommonFunctions_Mobile();
+	public static CommonFunctions commonFunctions = new CommonFunctions();
+	ExtentReports extent=TestSuiteMethods.getExtent();
+	ExtentTest feature ;
+	ExtentTest scenario;
+	Request request=new Request();
+	HashMap<String,String> potentialScreen=new HashMap<String,String>();
+	ArrayList<String> certificateStorageList=new ArrayList<>();
+	public static  String username1 = "";
+	public static  String username2 = "";
+	public static  String username3 = "";
+	public static  String username4 = "";
+	public static  String password1 = "";
+	String employeeNameDetails ="";
+	String employeeAvailability="";
+	String employeeLocationDetails="";
+	String employeePositionDetails="";
+	String employeeTypeDetails = "";
+
+	@Given("I am a Woolworths Employee and able to access Workjam application successfully for OfferShift {string}")
+	public void WjAppLogin(String string) throws Throwable
+	{
+		System.out.println("========workjam login............................");
+		String password="",password2="";String username="",username2="";
+
+		System.out.println("================workjam login================");
+		try {
+			System.out.println("coming to workjam succesfully...............");
+			//	String password="";String username="";
+			if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+				username =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Username").get(0);
+				password = (String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Password").get(0);
+				username2 =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Username").get(0);
+				password2 = (String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Password").get(0);
+				username1= getUserName(username2);
+				password1=password2;
+			}
+			else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+				username =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Manager Username").get(0);
+				password = (String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Manager Password").get(0);
+				username2 =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Username").get(0);
+				password2 = (String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Password").get(0);
+				username1= getUserName(username2);
+				password1=password2;
+			}
+			System.out.println("Username : "+username +" Password :"+password);
+			client.launch("com.workjam.workjam.uat", true, true);
+			System.out.println("succesfully login....");
+			Thread.sleep(3000); 
+			//			
+			System.out.println("Username : "+username +" Password :"+password);
+			try {
+				commonStepDefnitions.wjAppLogin(username,password,client);	
+			}
+			catch(Exception e) {
+				System.err.println("Workam application login issue exception....");
+				commonFuncMobile.clickButton("NATIVE",shiftObjects.more,"Login",client);
+				commonFuncMobile.clickButton("NATIVE",shiftObjects.settings,"Login",client);
+				commonFuncMobile.clickButton("NATIVE",shiftObjects.ManageAccounts,"Login",client);
+				commonFuncMobile.clickButton("NATIVE",shiftObjects.LogOutAll,"Login",client);
+				commonStepDefnitions.wjAppLogin(username,password,client);
+			}
+		}catch(Exception e) {
+
+		feature = extent.createTest(Feature.class, "Logging into Workjam Application");
+			scenario = feature.createNode(Scenario.class, "Logging into Workjam Application");
+			e.printStackTrace();
+			System.err.println("Workam application2 login issue exception....");
+			String img =commonFuncMobile.CaptureMobileScreenshot("LoginFail",client);  
+				scenario.createNode(new GherkinKeyword("Given"),
+		                "I am a Woolworths Employee and should be able to access the Workjam application")
+		                .fail("I (" + username + ") not able to access the Workjam Application",
+		                        MediaEntityBuilder.createScreenCaptureFromBase64String(img).build());
+
+			scenario.createNode(new GherkinKeyword("Given"), "I am a Woolworths Employee and should be able to access the Workjam application").fail("I ("+username+") not able to access the workjam Application"); 
+			Assert.fail();	
+		}
+		feature = extent.createTest(Feature.class, "Logging into Workjam Application");
+		scenario = feature.createNode(Scenario.class, "Logging into Workjam Application");
+		String img =commonFuncMobile.CaptureMobileScreenshot("VerisionValidationPass",client);  
+		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		
+		scenario.createNode(new GherkinKeyword("Given"),
+	                "I am a Woolworths Employee and should be able to access the Workjam application")
+	                .pass("I (" + username + ") able to access the Workjam Application",
+	                        MediaEntityBuilder.createScreenCaptureFromBase64String(img).build());
+
+		//scenario.createNode(new GherkinKeyword("Given"), "I am a Woolworths Employee and should be able to access the Workjam application").pass("I ("+username+") able to access the workjam Application"); 
+	}
+
+	public void swipeElementVisible(Client client,String xpath) {
+		client.swipeWhileNotFound("Down", 1200, 2000, "NATIVE", xpath, 0, 1000, 10, false) ;
+	}
+	public void clickOnScheduleSelectStore(String store,Client client) {
+		System.out.println("Store name is "+store);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.AddArrowButton , client);
+		commonFuncMobile.waitFor(3);
+		String store1 = commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.clickONStore2,store );
+		boolean elementFound = elementFound(store1,client);
+		if(elementFound)
+			System.out.println("Store Found at second place............");
+		else {
+			store1="";
+			store1 = commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.clickONStore,store );	
+		}
+		swipeElementVisible(client,store1);
+		commonFuncMobile.waitForElementClickable("NATIVE", store1, client);
+	}
+	public void clickOnScheduleOption(Client client) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.Schedule, client);
+
+	}
+
+	public void shiftRefreshAfterSubmit(Client client) {
+
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.nextButton, client);commonFuncMobile.waitFor(3);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.previousButton, client);
+	}
+	public void goToMyRequests(Client client) {
+		commonFuncMobile.waitFor(3);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.notificationsRefresh, client);
+		commonFuncMobile.waitFor(2);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.myRequestButton, client);
+
+	}
+	public void shiftRefresh() {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.nextButton, client);
+	}
+	public void clickShiftCreationPlusIcon(Client client) {
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects. addShiftPlusIcon, client);
+	}
+	public void scrollElementUptoVisible(String xpath,String destinationXpath) {
+		boolean bool=false;
+		System.out.println("xpath:"+xpath);
+		System.out.println("Destination xpath:"+destinationXpath);
+		if(client.isElementFound("NATIVE", destinationXpath)){
+			bool=true;
+		}
+		while(!bool) {
+			client.elementSwipe("NATIVE", xpath, 0, "Down", 600, 1000);
+			if(client.isElementFound("NATIVE", destinationXpath)){
+				bool=true;
+			}
+		}
+	}
+	public void scrollElementDowntoVisible(String xpath,String destinationXpath) {
+		boolean bool=false;
+		System.out.println("xpath:"+xpath);
+		System.out.println("Destination xpath:"+destinationXpath);
+		if(client.isElementFound("NATIVE", destinationXpath)){
+			bool=true;
+		}
+		if(!bool) {
+			client.elementSwipe("NATIVE", xpath, 0, "Up", 600, 1000);
+			if(client.isElementFound("NATIVE", destinationXpath)){
+				bool=true;
+			}
+		}
+
+	}
+	public void swipeElementDateFields(String dateMonthYear,Client client) {//24 November 2024//down
+		String[] split = dateMonthYear.split(" ");//tomorrow date month year
+		String date=split[0];
+		String month=split[1];
+		String year=split[2];
+		String dateFieldText=commonFuncMobile.getText("NATIVE",ShiftOfferObjects.dateField,client);
+		String monthFieldText=commonFuncMobile.getText("NATIVE",ShiftOfferObjects.monthField,client);
+		String yearFieldText=commonFuncMobile.getText("NATIVE",ShiftOfferObjects.yearField,client);
+		if(date.equals(dateFieldText)) {
+			System.out.println("=============Both dates are same in input for display & UI===============");
+		}
+		else {
+			String dateFieldText2=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.dateFieldsForDateMonthYear,date );
+			scrollElementUptoVisible(ShiftOfferObjects.dateField,dateFieldText2);
+		}
+		if(month.equals(monthFieldText)) {
+			System.out.println("=============Both months are same in input for display & UI===============");
+		}
+		else {
+			String monthFieldText2=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.dateFieldsForDateMonthYear,month );
+			scrollElementUptoVisible(ShiftOfferObjects.monthField,monthFieldText2);
+		}
+		if(year.equals(yearFieldText)) {
+			System.out.println("=============Both years are same in input for display & UI===============");
+		}
+		else {
+			String yearFieldText2=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.dateFieldsForDateMonthYear,year);
+			scrollElementUptoVisible(ShiftOfferObjects.yearField,yearFieldText2);
+
+		}
+	}
+	public void swipeElementDateFieldsDown(String dateMonthYear,Client client) {//24 November 2024"up"
+		String[] split = dateMonthYear.split(" ");//tomorrow date month year
+		String tomorrowDateMonthYear = getTodayDateMonthYearSydney() ;
+		String[] split2 = tomorrowDateMonthYear.split(" ");
+		String date2=split2[0];String month2=split2[0];String year2=split2[0];
+		String date=split[0];
+		String month=split[1];
+		String year=split[2];
+		String dateFieldText=commonFuncMobile.getText("NATIVE",ShiftOfferObjects.dateField,client);
+		String monthFieldText=commonFuncMobile.getText("NATIVE",ShiftOfferObjects.monthField,client);
+		String yearFieldText=commonFuncMobile.getText("NATIVE",ShiftOfferObjects.yearField,client);
+		if(date2.equals(dateFieldText)) {
+			System.out.println("=============Both dates are same in input for display & UI===============");
+			String dateFieldText2=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.dateFieldsForDateMonthYear,date);
+			scrollElementDowntoVisible(ShiftOfferObjects.dateField,dateFieldText2);
+		}
+
+		if(month2.equals(monthFieldText)) {
+			System.out.println("=============Both months are same in input for display & UI===============");
+
+		}
+
+		if(year2.equals(yearFieldText)) {
+			System.out.println("=============Both years are same in input for display & UI===============");
+
+		}
+
+	}
+
+	public void dateChange(Client client) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.date, client);
+		String tomorrowDateMonthYear = getTomorrowDateMonthYear() ;
+		swipeElementDateFields(tomorrowDateMonthYear,client);
+		System.out.println("************ Date Month Year "+tomorrowDateMonthYear);
+		System.out.println("============Suceesfully visible tomorrow date===============");
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.date, client);
+	}
+	public void dateChangeToday(Client client) {
+		String tomorrowDateMonthYear = getTodayDateMonthYearIndia() ;
+		swipeElementDateFieldsDown(tomorrowDateMonthYear,client);
+		System.out.println("************ Date Month Year "+tomorrowDateMonthYear);//today date
+		System.out.println("============Suceesfully visible today date===============");
+		commonFuncMobile.waitFor(5);
+	}
+	public static String getTodayDateMonthYearSydney() {
+		// Get the current time in Sydney
+		ZonedDateTime sydneyTime = ZonedDateTime.now(ZoneId.of("Australia/Sydney"));
+
+		// Format the date as 'd MMMM yyyy'
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
+		String formattedDate = sydneyTime.format(formatter);
+
+		System.out.println("Today's date in Sydney is: " + formattedDate);
+		return formattedDate;
+	}
+
+	public String getTomorrowDateMonthYear() {//20 December 2024
+		// Get the current time in Sydney
+		ZonedDateTime sydneyTime = ZonedDateTime.now(ZoneId.of("Australia/Sydney"));
+
+		// Calculate tomorrow's date
+		ZonedDateTime tomorrow = sydneyTime.plus(1, ChronoUnit.DAYS);
+
+		// Format the date as 'd MMMM yyyy'
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
+		String formattedDate = tomorrow.format(formatter);
+
+		System.out.println("Tomorrow's date in Sydney is: " + formattedDate);
+		return formattedDate;
+	}
+	public static String getTodayDateMonthYearIndia() {
+		// Get the current time in India
+		ZonedDateTime indiaTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+
+		// Format the date as 'd MMMM yyyy'
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
+		String formattedDate = indiaTime.format(formatter);
+
+		System.out.println("Today's date in India is: " + formattedDate);
+		return formattedDate;
+	}
+
+	@Then("I click on Schedule option for {string}")
+	public void i_click_on_schedule_option(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, string);
+		scenario = feature.createNode(Scenario.class, string);
+		try {
+			clickOnScheduleOption(client);
+			scenario.createNode(new GherkinKeyword("Then"), "I click on Schedule option for "+string).pass("Successfully clicked on Schedule option");
+			System.out.println("\nSuccessfully clicked on Schedule option");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I click on Schedule option").fail("Failed to click on Schedule option");
+			System.out.println("\nFailed to click on Schedule option");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I navigate to daily shift screen")
+	public void i_navigate_to_daily_shift_screen() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			shiftRefresh();
+			scenario.createNode(new GherkinKeyword("Then"), "I navigate to daily shift screen").pass("Successfully navigated to daily shift screen");
+			System.out.println("\nSuccessfully navigated to daily shift screen");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I navigate to daily shift screen").fail("Failed to navigate to daily shift screen");
+			System.out.println("\nFailed to navigate to daily shift screen");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	public String selectStoreShift(String string,Client client) {
+		String store="";
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			store =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Store").get(0);
+		}
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			store =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Manager Store").get(0);
+		}
+		return store;
+	}
+	public String selectPositionShift(String string,Client client) {
+		String positionName="";
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			positionName=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Position").get(0);
+		}
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			positionName=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Position").get(0);
+		}
+		return positionName;
+	}
+	@Then("I click on my required store for {string}")
+	public void i_click_on_my_required_store(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			String store="";
+			store=selectStoreShift(string,client);
+			clickOnScheduleSelectStore(store,client);
+			scenario.createNode(new GherkinKeyword("Then"), "I click on my required store under My scedule ").pass("Successfully clicked on store is "+store+" under my schedule");
+			System.out.println("\nSuccessfully clicked on my required store");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I click on my required store").fail("Failed to click on my required store");
+			System.out.println("\nFailed to click on my required store");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	
+	@Then("I click on create shift")
+	public void i_click_on_create_shift() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			String tomorrowDateMonthYear = getTomorrowDateMonthYear() ;
+			clickShiftCreationPlusIcon(client);
+			dateChange(client) ;//date change here
+			clickOnMainSegment(client);
+			clickOnShiftType(client);
+			scenario.createNode(new GherkinKeyword("Then"), "I click on create shift").pass("creating shift on "+tomorrowDateMonthYear);
+			System.out.println("\nSuccessfully clicked on create shift");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I click on create shift").fail("Failed to click on create shift");
+			System.out.println("\nFailed to click on create shift");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I click on create segment for {string}")
+	public void creationThreeSegmentTime(String string) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.createSegmentButton, client);
+		timeEditForSegment(string,client);
+		if(string.contains("Break"))
+			clickOnShiftTypeMeal(client);
+		else
+			clickOnShiftType(client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.NotesDone, client);
+	}
+	@Then("I select the store under edit segment page for {string}")
+	public void i_select_the_store_under_edit_segment_page(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+
+		try {
+			timeEditForSegment(string,client);
+			String time=verifyTimingInShiftRequestPagesAMPM(client,string);
+			String locationName="";
+			locationName=selectStoreShift(string,client);
+			clickOnSelectedLocation(locationName,client);
+			scenario.createNode(new GherkinKeyword("Then"), "I select the store under edit segment page").pass("Successfully selected the store under edit segment page is "+locationName+ " shift Timings is "+time);
+			System.out.println("\nSuccessfully selected the store under edit segment page");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I select the store under edit segment page").fail("Failed to select the store under edit segment page");
+			System.out.println("\nFailed to select the store under edit segment page");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I select the position under edit segment page for {string}")
+	public void i_select_the_position_under_edit_segment_page(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			String positionName="";
+			positionName=selectPositionShift(string,client);
+			clickOnPositionLocation(positionName,client);
+			scenario.createNode(new GherkinKeyword("Then"), "I select the position under edit segment page").pass("Successfully selected the position under edit segment page is "+positionName);
+			System.out.println("\nSuccessfully selected the position under edit segment page");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I select the position under edit segment page").fail("Failed to select the position under edit segment page");
+			System.out.println("\nFailed to select the position under edit segment page");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	@Then("click on submit edit segment")
+	public void done_after_position() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		clickOnSaveButton(client);
+	}	
+
+	@Then("I select the shift badge profile under edit segment page")
+	public void i_select_the_shift_badge_profile_under_edit_segment_page() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			clickOnBadge(client);
+			scenario.createNode(new GherkinKeyword("Then"), "I select the shift badge profile under edit segment page").pass("Successfully selected the shift badge profile under edit segment page");
+			System.out.println("\nSuccessfully selected the shift badge profile under edit segment page");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I select the shift badge profile under edit segment page").fail("Failed to select the shift badge profile under edit segment page");
+			System.out.println("\nFailed to select the shift badge profile under edit segment page");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I create a break segment")
+	public void i_create_a_break_segment() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			scenario.createNode(new GherkinKeyword("Then"), "I create a break segment").pass("Successfully created a break segment");
+			System.out.println("\nSuccessfully created a break segment");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I create a break segment").fail("Failed to create a break segment");
+			System.out.println("\nFailed to create a break segment");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I create the third segment")
+	public void i_create_the_third_segment() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			scenario.createNode(new GherkinKeyword("Then"), "I create the third segment").pass("Successfully created the third segment");
+			System.out.println("\nSuccessfully created the third segment");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I create the third segment").fail("Failed to create the third segment");
+			System.out.println("\nFailed to create the third segment");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I increment the offered spots")
+	public void i_increment_the_offered_spots() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+
+
+			clickOnOfferedSpots(1,client);
+			scenario.createNode(new GherkinKeyword("Then"), "I increment the offered spots").pass("Successfully incremented the offered spots");
+			System.out.println("\nSuccessfully incremented the offered spots");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I increment the offered spots").fail("Failed to increment the offered spots");
+			System.out.println("\nFailed to increment the offered spots");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I click on add employee for {string}")
+	public void i_click_on_add_employee(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			String employeeNumber=getUserNameAsTeamMember(string);
+			clickOnOfferedAddEmployees(1,employeeNumber,client);
+			scenario.createNode(new GherkinKeyword("Then"), "I click on add employee").pass("Successfully i selected an employee is "+employeeNumber);
+			System.out.println("\nSuccessfully clicked on add employee");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I click on add employee").fail("Failed to click on add employee");
+			System.out.println("\nFailed to click on add employee");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I view the potential assignee screen for the selected employee")
+	public void i_view_the_potential_assignee_screen_for_the_selected_employee() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "Potential Employee Screen");
+		scenario = feature.createNode(Scenario.class, "Potential Employee Screen Details");
+		try {
+			getAllDetailsRelatedEmployeePotentialScreen(client);
+			boolean certificateFound = elementFound(ShiftOfferObjects.potentialScreenCerificateVerification,client);
+			if(certificateFound)
+				getCertificatesForWarningRuleViolations( client,"Potential Assigne Screen");
+			else
+				System.out.println("No certificates found ......");
+			
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.potentialExitScreen, client);
+			System.out.println("\nSuccessfully viewed the potential assignee screen for the selected employee");
+		} catch (Exception e) {
+			String img =commonFuncMobile.CaptureMobileScreenshot("PotentialScreenLoadToFail",client);  
+			
+			 String base64Image = convertImageToBase64(img);
+			scenario.createNode(new GherkinKeyword("Then"), "I view the potential assignee screen for the selected employee").fail("Failed to view the potential assignee screen for the selected employee", MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+			System.out.println("\nFailed to view the potential assignee screen for the selected employee");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I select the employee")
+	public void i_select_the_employee() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "Selecting an Employee");
+		scenario = feature.createNode(Scenario.class, "Select an employee for creation of shift.");
+		try {
+			selectRadioButton(client) ;
+			commonFuncMobile.waitFor(4);
+			clickOnSaveButton(client);
+			commonFuncMobile.waitFor(4);
+			scenario.createNode(new GherkinKeyword("Then"), "I select the employee").pass("Successfully selected the employee");
+			System.out.println("\nSuccessfully selected the employee");
+		} catch (Exception e) {
+			
+			scenario.createNode(new GherkinKeyword("Then"), "I select the employee").fail("Failed to select the employee");
+			System.out.println("\nFailed to select the employee");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I add notes for the employee")
+	public void i_add_notes_for_the_employee() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			sendDataNotesWhileCreationOfSegment(client,"Adding Notes while creating Shift...");
+			scenario.createNode(new GherkinKeyword("Then"), "I add notes for the employee").pass("Successfully added notes for the employee is Adding Notes while creating Shift...");
+			System.out.println("\nSuccessfully added notes for the employee");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I add notes for the employee").fail("Failed to add notes for the employee");
+			System.out.println("\nFailed to add notes for the employee");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I validate rule violations in secondary Rule Violation Screen")
+	public void i_validate_rule_violations_in_secondary_rule_violation_screen() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "Secondary Rule Violation Screen");
+		scenario = feature.createNode(Scenario.class, "Secondary Rule Violation Screen Details");
+		try {
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.saveButtonForCreateShift, client);
+			commonFuncMobile.waitFor(5);
+			verifyingSecondaryScreenValidations(client);
+			System.out.println("\nSuccessfully validated rule violations in secondary Rule Violation Screen");
+		} catch (Exception e) {
+			String img =commonFuncMobile.CaptureMobileScreenshot("SeconadryRuleViolationFail",client);
+			 String base64Image = convertImageToBase64(img);
+			 scenario.createNode(new GherkinKeyword("Then"), "I validate rule violations in secondary Rule Violation Screen").fail("Failed to validate rule violations in secondary Rule Violation Screen",MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+			System.out.println("\nFailed to validate rule violations in secondary Rule Violation Screen");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I click on submit shift")
+	public void i_click_on_submit_shift() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+
+		try {
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.saveButtonForCreateShift, client);
+			commonFuncMobile.waitFor(5);
+			scenario.createNode(new GherkinKeyword("Then"), "I click on submit shift").pass("Successfully clicked on submit shift");
+			System.out.println("\nSuccessfully clicked on submit shift");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I click on submit shift").fail("Failed to click on submit shift");
+			System.out.println("\nFailed to click on submit shift");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@And("I view the unfilled position")
+	public void i_view_the_unfilled_position() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			shiftRefreshAfterSubmit(client);
+			boolean unFilledFound = elementFound(ShiftOfferObjects.unfilledVerifcation,client);
+			if(unFilledFound) {
+				System.out.println("Unfilled portion will be available under particular date on "+getTomorrowDateMonthYear());
+			}
+			else {
+				System.out.println("It is Unfilled......");
+			}
+		
+			String img =commonFuncMobile.CaptureMobileScreenshot("UnfilledPositionPass",client);
+			 String base64Image = convertImageToBase64(img);
+			
+			scenario.createNode(new GherkinKeyword("And"), "I view the unfilled position").pass("Successfully viewed the unfilled position",MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+			System.out.println("\nSuccessfully viewed the unfilled position");
+		} catch (Exception e) {
+			
+			String img =commonFuncMobile.CaptureMobileScreenshot("UnfilledPositionFail",client);
+			 String base64Image = convertImageToBase64(img);
+			scenario.createNode(new GherkinKeyword("And"), "I view the unfilled position").fail("Failed to view the unfilled position",MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+			System.out.println("\nFailed to view the unfilled position");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@And("I verify the shift request with {string} status under employee request for {string}")
+	public void i_verify_the_shift_request_with_pending_recipient_status_under_employee_request(String string1,String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "verify the shift request with "+string1+" status under employee request for "+string);
+		scenario = feature.createNode(Scenario.class, "verifying the shift request with "+string1+" status under employee request for "+string);
+		try {
+			String userNameAsTeamMember = getUserNameAsTeamMember(string);
+			checkFilterAsStartDate(client,userNameAsTeamMember);
+			
+			String locationName="";
+			locationName=selectStoreShift(string,client);
+			String positionName="";
+			positionName=selectPositionShift(string,client);
+			checkNotificationsUnderManagerEmployeeRequests(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),string1) ;//12 Dec
+						String img =commonFuncMobile.CaptureMobileScreenshot(string+" status pass",client);
+			 String base64Image = convertImageToBase64(img);
+			scenario.createNode(new GherkinKeyword("And"), "I verify the shift request with "+string1+" status under employee request").pass("Successfully verified the shift request with "+string1+" status ",MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+			System.out.println("\nSuccessfully verified the shift request with pending recipient status");
+		} catch (Exception e) {
+						String img =commonFuncMobile.CaptureMobileScreenshot(string+" status fail",client);
+			 String base64Image = convertImageToBase64(img);
+			scenario.createNode(new GherkinKeyword("And"), "I verify the shift request with "+string1+" status under employee request").fail("Failed to verify the shift request with "+string1+" status",MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+			System.out.println("\nFailed to verify the shift request with pending recipient status");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	public String[] userCredentials(String string) {
+		String[] details=new String[4];String teamMemberuserName="",teamManageruserName="",teamManagerPassword="",teamMemberPassword="";
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			teamMemberuserName=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Username").get(0);
+			teamManageruserName=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Username").get(0);
+			teamManagerPassword=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Password").get(0);
+			teamMemberPassword=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Password").get(0);
+
+		}
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			teamManageruserName=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Manager Username").get(0);
+			teamManagerPassword= (String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Manager Password").get(0);
+			teamMemberuserName=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Username").get(0);
+			teamMemberPassword = (String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Password").get(0);
+
+		}
+		else {
+			System.out.println("user credentials wrong................");
+		}
+		details[1]=teamMemberuserName;details[0]=teamManageruserName;details[2]=teamManagerPassword;details[3]=teamMemberPassword;
+
+		return details;
+	}
+	@Then("I login as team member for {string}")
+	public void i_login_as_team_member(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "Log in as TeamMember");
+		scenario = feature.createNode(Scenario.class, "LogIn as Team Member for "+string);
+		System.out.println("==========================="+string);
+		String[] details = userCredentials(string);
+		System.out.println("==========================="+details[1]);
+		String userName=details[1];
+		String Password=details[3];
+		System.out.println("==========================="+details[3]);
+		try {
+			System.out.println(userName+Password);
+			loginAsTeamMember(userName,Password);
+			scenario.createNode(new GherkinKeyword("Then"), "I login as team member").pass("Successfully logged in as team member is "+ userName);
+			System.out.println("\nSuccessfully logged in as team member");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I login as team member").fail("Failed to log in as team member "+ userName);
+			System.out.println("\nFailed to log in as team member");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I navigate to my requests for {string}")
+	public void i_navigate_to_my_requests(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			System.out.println("=====================");
+			String userNameAsTeamMember = getUserNameAsTeamMember(string);
+			checkFilterAsStartDate(client,userNameAsTeamMember);
+			goToMyRequests(client);
+			scenario.createNode(new GherkinKeyword("Then"), "I navigate to my requests").pass("Successfully navigated to my requests");
+			System.out.println("\nSuccessfully navigated to my requests");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I navigate to my requests").fail("Failed to navigate to my requests");
+			System.out.println("\nFailed to navigate to my requests");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I verify the {string} shift request for {string}")
+	public void i_verify_the_incoming_shift_request(String string1,String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "Verify the shift request and shift details under Employee Request " );
+		scenario = feature.createNode(Scenario.class, "Verifying the shift request for "+string+" is "+string1);
+		try {
+			String locationName=selectStoreShift(string,client);
+			String positionName=selectStoreShift(string,client);
+			checkRequestUnderMyRequest(client,locationName,string1);
+			checkRequestDetailsUnderTeamMember(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),string1,string,"Team Member");
+			//scenario.createNode(new GherkinKeyword("Then"), "I verify the "+string1+" shift request").pass("Successfully verified the "+string1+" shift request");
+			System.out.println("\nSuccessfully verified the incoming shift request");
+		} catch (Exception e) {
+			
+			String img =commonFuncMobile.CaptureMobileScreenshot(string+" status pass",client);
+			 String base64Image = convertImageToBase64(img);
+			scenario.createNode(new GherkinKeyword("Then"),"I verify the "+string1+" shift request").fail("Failed to verify the "+string1+" shift request",MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+			System.out.println("\nFailed to verify the incoming shift request");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	@Then("I accept the shift")
+	public void i_accept_the_shift() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "Activities Done By under Team manager" );
+		scenario = feature.createNode(Scenario.class, "Login as Team Manager");
+		try {
+			acceptShift(client);
+			commonFuncMobile.waitFor(4);
+			scenario.createNode(new GherkinKeyword("Then"), "Team Member accept the shift").pass("Successfully accepted the shift");
+			System.out.println("\nSuccessfully accepted the shift");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "Team Member accept the shift").fail("Failed to accept the shift");
+			System.out.println("\nFailed to accept the shift");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I verify the shift request status changing to {string} for {string}")
+	public void i_verify_the_shift_request_status_changing_to_pending_approval(String string1,String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+
+		try {
+			String locationName=selectStoreShift(string,client);
+			verifyPendingApprovalStatus(client);//for pending approval method only..
+			getTypeOfStatus(client,locationName,string1);//team member screen
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift request status changing to "+string1).pass("Successfully verified the shift request status change to "+string1);
+			System.out.println("\nSuccessfully verified the shift request status change to pending approval");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift request status changing to "+string1).fail("Failed to verify the shift request status change to "+string1);
+			System.out.println("\nFailed to verify the shift request status change to pending approval");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I login as manager for {string}")
+	public void i_login_as_manager(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			String[] details = userCredentials(string);
+			String userName=details[0];
+			String Password=details[2];
+			loginAsTeamManager(client);
+			scenario.createNode(new GherkinKeyword("Then"), "I login as Team manager").pass("Successfully logged in as Team manager is "+userName);
+			System.out.println("\nSuccessfully logged in as manager");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I login as Team manager").fail("Failed to log in as manager");
+			System.out.println("\nFailed to log in as manager");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	@Then("I login as member for {string}")
+	public void i_login_as_member(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "Activities Done By under Team member" );
+		scenario = feature.createNode(Scenario.class, "Login as Team Member");
+		try {
+			String[] details = userCredentials(string);
+			String userName=details[1];
+			String Password=details[2];
+			loginAsTeamManager(client);
+			scenario.createNode(new GherkinKeyword("Then"), "I login as Team member").pass("Successfully logged in as Team member is "+userName);
+			System.out.println("\nSuccessfully logged in as manager");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I login as Team member").fail("Failed to log in as Team member");
+			System.out.println("\nFailed to log in as manager");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	@And("I verify the shift request with {string} status under employee requests for {string}")
+	public void i_verify_the_shift_request_with_pending_approval_status_under_employee_requests(String string1,String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "verify the shift request  status under employee requests");
+		scenario = feature.createNode(Scenario.class, "verify the shift request  status under employee requests Details");
+		try {
+			String locationName="";
+			locationName=selectStoreShift(string,client);
+			String positionName="";
+			positionName=selectPositionShift(string,client);
+			String userNameAsTeamMember = getUserNameAsTeamMember(string);
+			checkFilterAsStartDate(client,userNameAsTeamMember);
+			checkNotificationsUnderManagerEmployeeRequests(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),string1) ;//12 Dec
+			clickOnCards(client,positionName,locationName);
+			checkRequestDetailsUnderTeamMember(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),string1,string,"Team Manager");
+
+			scenario.createNode(new GherkinKeyword("And"), "I verify the shift request with "+string1+" status under employee requests").pass("Successfully verified the shift request with "+string1+" status");
+			System.out.println("\nSuccessfully verified the shift request with pending approval status");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("And"), "I verify the shift request with "+string1+" status under employee requests").fail("Failed to verify the shift request with "+string1+" status");
+			System.out.println("\nFailed to verify the shift request with pending approval status");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	@Then("I approve the shift")
+	public void i_approve_the_shift() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			managerAcceptRequest(client,"Approval");commonFuncMobile.waitFor(4);
+			validationApproved(client,"Approved","Manager");
+			scenario.createNode(new GherkinKeyword("Then"), "I approve the shift").pass("Successfully approved the shift");
+			System.out.println("\nSuccessfully approved the shift");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I approve the shift").fail("Failed to approve the shift");
+			System.out.println("\nFailed to approve the shift");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I verify the shift request in Manager Archived list as {string} for {string}")
+	public void i_verify_the_shift_request_in_manager_archived_list(String string1,String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			String locationName="";
+			locationName=selectStoreShift(string,client);
+
+			goToMyRequests(client);
+			gotoArcheive(client );
+			String complete = checkRequestUnderMyRequestGetType(client,locationName,string1);
+			printDataStatus(complete);
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift request in Manager Archived list").pass("Successfully verified the shift request in Manager Archived list as "+string1);
+			System.out.println("\nSuccessfully verified the shift request in Manager Archived list");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift request in Manager Archived list").fail("Failed to verify the shift request in Manager Archived list");
+			System.out.println("\nFailed to verify the shift request in Manager Archived list");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I verify the shift in daily shift screen for {string}")
+	public void i_verify_the_shift_in_daily_shift_screen(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			String locationName="";
+			locationName=selectStoreShift(string,client);
+			String positionName="";
+			positionName=selectPositionShift(string,client);
+			clickOnScheduleOption(client);
+			clickOnScheduleSelectStore(locationName,client);
+			shiftRefresh();
+			filterShiftMySchedule(getUserNameAsTeamMember(string),client,positionName);
+			confirmShiftDetailsUnderMySchedule(client,positionName,locationName,string);
+			System.out.println("\nSuccessfully verified the shift in daily shift screen");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift in daily shift screen").fail("Failed to verify the shift in daily shift screen");
+			System.out.println("\nFailed to verify the shift in daily shift screen");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	@Given("I am checking present version of device for {string}")
+	public void checkversionPhone(String string) throws ClassNotFoundException, IOException {
+		String version="";
+		try {
+			if(string.equals("Android")) {
+				//commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.navBar, client);
+				client.swipeWhileNotFound("Down", 1200, 2000, "NATIVE", AvailabilityObjects.help, 0, 1000, 3, false);
+				commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.androidsettings, client);
+				version=commonFuncMobile.getText("NATIVE",AvailabilityObjects.androidversion ,client);
+				commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.androidbackSideNavBar, client);
+				client.swipeWhileNotFound("Up", 1200, 2000, "NATIVE", AvailabilityObjects. Schedule, 0, 1000, 3, true);
+			}
+			else {
+				commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.more, client);
+				commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.settings, client);
+				if(client.isElementFound("NATIVE",AvailabilityObjects. versionMobile)) {
+					version=commonFuncMobile.getText("NATIVE",AvailabilityObjects. versionMobile ,client);
+				}
+
+			}
+			String img =commonFuncMobile.CaptureMobileScreenshot("VerisionValidationPass",client);  
+			
+			
+				scenario.createNode(new GherkinKeyword("Given"),
+		                "Checking version for Device is ")
+		                .pass("version of "+string+" device is "+version,
+		                        MediaEntityBuilder.createScreenCaptureFromBase64String(img).build());
+
+			//scenario.createNode(new GherkinKeyword("Then"), "Checking version for Device is ").pass("version of "+string+" device is "+version); 
+
+		}catch(Exception e) {
+			String img =commonFuncMobile.CaptureMobileScreenshot("VerisionValidationFail",client);  	
+		scenario.createNode(new GherkinKeyword("Then"), "Checking version for Device is ").fail("I am not able to fetch version of "+string+" device", MediaEntityBuilder.createScreenCaptureFromBase64String(img).build()); 
+	e.printStackTrace();
+		Assert.fail();
+	
+		}
+
+	}
+	@Then("I verify the shift request in Team Member Archived list as {string} for {string}")
+	public void i_verify_the_shift_request_in_team_member_archived_list(String string1,String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			String locationName="";
+			locationName=selectStoreShift(string,client);
+			String positionName="";
+			positionName=selectPositionShift(string,client);
+			clickOnNotification(client);
+			String userNameAsTeamMember = getUserNameAsTeamMember(string);
+			checkFilterAsStartDate(client,userNameAsTeamMember);
+			goToMyRequests(client);
+			gotoArcheive(client );
+			String membercomplete = checkRequestUnderMyRequestGetType(client,locationName,"Approved");
+			printDataStatus(membercomplete);
+			checkRequestUnderMyRequest(client,locationName,"Approved");
+			checkRequestDetailsUnderTeamMember(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),string1,string,"Team Member");
+			validationApproved(client,"Approved","Team Member");
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift request in Team Member Archived list").pass("Successfully verified the shift request in Team Member Archived list");
+			System.out.println("\nSuccessfully verified the shift request in Team Member Archived list");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift request in Team Member Archived list").fail("Failed to verify the shift request in Team Member Archived list");
+			System.out.println("\nFailed to verify the shift request in Team Member Archived list");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	@Then("I verify the shift request in Team Member Archived list {string} for {string}")
+	public void i_verify_the_shift_request_in_team_member_archived_list_directly(String string1,String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			String locationName="";
+			locationName=selectStoreShift(string,client);
+			String positionName="";
+			positionName=selectPositionShift(string,client);
+			commonFuncMobile.waitFor(5);
+			gotoArcheive(client );
+			String membercomplete = checkRequestUnderMyRequestGetType(client,locationName,"Approved");
+			printDataStatus(membercomplete);
+			checkRequestUnderMyRequest(client,locationName,"Approved");
+			checkRequestDetailsUnderTeamMember(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),string1,string,"Team Member");
+			validationApproved(client,"Approved","Team Member");
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift request in Team Member Archived list").pass("Successfully verified the shift request in Team Member Archived list");
+			System.out.println("\nSuccessfully verified the shift request in Team Member Archived list");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift request in Team Member Archived list").fail("Failed to verify the shift request in Team Member Archived list");
+			System.out.println("\nFailed to verify the shift request in Team Member Archived list");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+
+	@Then("I verify the shift in under My Schedule screen for {string}")
+	public void i_verify_the_shift_under_my_schedule(String string) throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		feature = extent.createTest(Feature.class, "verify the shift  under My Schedule Screeen");
+		scenario = feature.createNode(Scenario.class, "verify the shift  under My Schedule Screeen");
+
+		try {
+			gotoMyScheduleScreen(client,string);
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift under my schedule").pass("Successfully verified the shift under my schedule");
+			System.out.println("\nSuccessfully verified the shift under my schedule");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift under my schedule").fail("Failed to verify the shift under my schedule");
+			System.out.println("\nFailed to verify the shift under my schedule");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	@Given("Check Input Sheet Details For {string}")
+	public void printAllInputDetails(String string) throws ClassNotFoundException {
+		feature = extent.createTest(Feature.class, "Input Sheet Details ");
+		scenario = feature.createNode(Scenario.class, "Input Sheet Details For "+string);
+
+		try {
+			if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+				StringBuilder builder=new StringBuilder();
+				String startHour=(String)  OfferShiftSheetData.get("WarningRuleViloation_startHour_firstsegment").get(0);
+				String startMinute=(String)  OfferShiftSheetData.get("WarningRuleViloation_startMinute_firstsegment").get(0);
+				String endHour=(String)  OfferShiftSheetData.get("WarningRuleViloation_endHour_firstsegment").get(0);
+				String endMinute=(String)  OfferShiftSheetData.get("WarningRuleViloation_endMinute_firstsegment").get(0);
+				String startMeridian =(String)  OfferShiftSheetData.get("WarningRuleViloation_startMeridian_firstsegment").get(0);
+				String endMeridian =(String)  OfferShiftSheetData.get("WarningRuleViloation_endMeridian_firstsegment").get(0);
+				String[] allShiftDeatils = getAllShiftDeatils(string);
+				String store=allShiftDeatils [0];
+				String position=allShiftDeatils [1];
+				String startTime= startHour+":"+startMinute+" "+ startMeridian;
+				String endTime= endHour+":"+endMinute+" "+ endMeridian;
+				String teammanagerusername =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Username").get(0);
+				String teamMemberusername =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Username").get(0);
+				builder.append("\n")
+				.append("Store: ").append(store).append("\n")
+				.append("Position: ").append(position).append("\n")
+				.append("Start Time for first segment : ").append(startTime).append("\n")
+				.append("End Time for first segment: ").append(endTime).append("\n")
+				.append("Team Manager Username: ").append(teammanagerusername).append("\n")
+				.append("Team Member Username: ").append(teamMemberusername).append("\n");
+				scenario.createNode(new GherkinKeyword("Then"), "I verify the Input Sheet Details for "+string).pass(builder.toString());
+
+			}
+			if(string.equals("Creation of Three Segments for No Rule Violation")) {
+				 StringBuilder builder = new StringBuilder();
+
+				// Team Manager Details
+				 String teamManagerUsername = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Manager Username").get(0);
+				 String teamManagerPassword = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Manager Password").get(0);
+				 String teamManagerStore = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Manager Store").get(0);
+
+				 // Team Member Details
+				 String teamMemberUsername = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Username").get(0);
+				 String teamMemberPassword = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Password").get(0);
+				 String teamMemberStore = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Store").get(0);
+				 String teamMemberPosition = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Position").get(0);
+
+				 // First Segment Start and End Time
+				 String firstSegmentStartHour = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_firstsegment").get(0);
+				 String firstSegmentStartMinute = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_firstsegment").get(0);
+				 String firstSegmentStartMeridian = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMeridian_firstsegment").get(0);
+				 String firstSegmentEndHour = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_firstsegment").get(0);
+				 String firstSegmentEndMinute = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_firstsegment").get(0);
+				 String firstSegmentEndMeridian = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMeridian_firstsegment").get(0);
+
+				 // Break Segment Start and End Time
+				 String breakSegmentStartHour = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_breaksegment").get(0);
+				 String breakSegmentStartMinute = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_breaksegment").get(0);
+				 String breakSegmentStartMeridian = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMeridian_breaksegment").get(0);
+				 String breakSegmentEndHour = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_breaksegment").get(0);
+				 String breakSegmentEndMinute = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_breaksegment").get(0);
+				 String breakSegmentEndMeridian = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMeridian_breaksegment").get(0);
+
+				 // Second Segment Start and End Time
+				 String secondSegmentStartHour = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_secondsegment").get(0);
+				 String secondSegmentStartMinute = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_secondsegment").get(0);
+				 String secondSegmentStartMeridian = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMeridian_secondsegment").get(0);
+				 String secondSegmentEndHour = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_secondsegment").get(0);
+				 String secondSegmentEndMinute = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_secondsegment").get(0);
+				 String secondSegmentEndMeridian = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMeridian_secondsegment").get(0);
+
+			        // Formatting and appending details to StringBuilder
+			        builder.append("Team Manager Details: \n")
+			               .append("Username: ").append(teamManagerUsername).append("\n")
+			               .append("Password: ").append(teamManagerPassword).append("\n")
+			               .append("Store: ").append(teamManagerStore).append("\n")
+			               .append("\n");
+
+			        builder.append("Team Member Details: \n")
+			               .append("Username: ").append(teamMemberUsername).append("\n")
+			               .append("Password: ").append(teamMemberPassword).append("\n")
+			               .append("Store: ").append(teamMemberStore).append("\n")
+			               .append("Position: ").append(teamMemberPosition).append("\n")
+			               .append("\n");
+
+			        // First Segment Details
+			        String firstSegmentStartTime = firstSegmentStartHour + ":" + firstSegmentStartMinute + " " + firstSegmentStartMeridian;
+			        String firstSegmentEndTime = firstSegmentEndHour + ":" + firstSegmentEndMinute + " " + firstSegmentEndMeridian;
+			        builder.append("First Segment Start Time: ").append(firstSegmentStartTime).append("\n")
+			               .append("First Segment End Time: ").append(firstSegmentEndTime).append("\n")
+			               .append("\n");
+
+			        // Break Segment Details
+			        String breakSegmentStartTime = breakSegmentStartHour + ":" + breakSegmentStartMinute + " " + breakSegmentStartMeridian;
+			        String breakSegmentEndTime = breakSegmentEndHour + ":" + breakSegmentEndMinute + " " + breakSegmentEndMeridian;
+			        builder.append("Break Segment Start Time: ").append(breakSegmentStartTime).append("\n")
+			               .append("Break Segment End Time: ").append(breakSegmentEndTime).append("\n")
+			               .append("\n");
+
+			        // Second Segment Details
+			        String secondSegmentStartTime = secondSegmentStartHour + ":" + secondSegmentStartMinute + " " + secondSegmentStartMeridian;
+			        String secondSegmentEndTime = secondSegmentEndHour + ":" + secondSegmentEndMinute + " " + secondSegmentEndMeridian;
+			        builder.append("Second Segment Start Time: ").append(secondSegmentStartTime).append("\n")
+			               .append("Second Segment End Time: ").append(secondSegmentEndTime).append("\n");
+
+			        // Output the final string for verification
+			        System.out.println(builder.toString());
+			        scenario.createNode(new GherkinKeyword("Then"), "I verify the Input Sheet Details for "+string).pass(builder.toString());
+
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift under kronos").fail("Failed to verify the shift under kronos");
+			System.out.println("\nFailed to verify the shift under kronos");
+			e.printStackTrace();
+			Assert.fail();
+		}
+
+	}
+	@Then("I verify the shift in kronos for {string}")
+	public void checkShiftInKronos(String string) throws Throwable {
+		feature = extent.createTest(Feature.class, "Verifying the Shift In Kronos");
+		scenario = feature.createNode(Scenario.class, "Verifying the Shift In Kronos");
+		try {
+			String UserName="",startDate="",endDate="";
+			UserName=getUserNameForValidationInKronosTeamMember(string);
+			startDate=getTomorrowDateLikeKronosFormat() ;
+			endDate=getTomorrowDateLikeKronosFormat() ;
+			System.out.println("UserName "+UserName+ "StartDate "+startDate+" Enddate "+endDate);
+			String xml=request.getScheduleXml(UserName,startDate, endDate, "12:00AM", "11:59PM");
+			System.out.println("XML Data Request: "+xml);
+			String kronosUrl = SuiteLevelVariables.KronosSitApiURL;
+			String ScheduleXml = RequestHandler.sendRequestForInterface(xml, kronosUrl,"Kronos");
+			processXmlData(ScheduleXml,string);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift under kronos").fail("Failed to verify the shift under kronos");
+			System.out.println("\nFailed to verify the shift under kronos");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	public void processXmlData(String xmlData,String string) {
+		try {
+			// Initialize the document builder to parse the XML string
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			InputStream is = new ByteArrayInputStream(xmlData.getBytes("UTF-8"));
+			Document document = builder.parse(is);
+
+			// Normalize the XML structure
+			document.getDocumentElement().normalize();
+
+			// StringBuilder to collect all the output
+			StringBuilder output = new StringBuilder();
+
+			// Extract and print PersonNumber from PersonIdentity
+			NodeList personIdentityList = document.getElementsByTagName("PersonIdentity");
+			for (int i = 0; i < personIdentityList.getLength(); i++) {
+				Node personIdentityNode = personIdentityList.item(i);
+
+				if (personIdentityNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element personIdentity = (Element) personIdentityNode;
+					String personNumber = personIdentity.getAttribute("PersonNumber");
+					output.append("PersonNumber: ").append(personNumber).append("\n");
+				}
+			}
+			output.append("\nShift Segment Details:\n");
+
+			// Extract and print ShiftSegments details
+			NodeList scheduleShiftList = document.getElementsByTagName("ScheduleShift");
+			for (int i = 0; i < scheduleShiftList.getLength(); i++) {
+				Node scheduleShiftNode = scheduleShiftList.item(i);
+
+				if (scheduleShiftNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element scheduleShift = (Element) scheduleShiftNode;
+
+					// Get the ShiftSegments node list under ScheduleShift
+					NodeList shiftSegmentList = scheduleShift.getElementsByTagName("ShiftSegment");
+					int count=0;
+					// Iterate over each ShiftSegment and extract details
+					for (int j = 0; j < shiftSegmentList.getLength(); j++) {
+						output=new StringBuilder("");
+						Node shiftSegmentNode = shiftSegmentList.item(j);
+
+						if (shiftSegmentNode.getNodeType() == Node.ELEMENT_NODE) {
+							Element shiftSegment = (Element) shiftSegmentNode;
+
+							// Extracting the required attributes
+							String segmentTypeName = shiftSegment.getAttribute("SegmentTypeName");
+							String startDate = shiftSegment.getAttribute("StartDate");
+							String startTime = shiftSegment.getAttribute("StartTime");
+							String endDate = shiftSegment.getAttribute("EndDate");
+							String endTime = shiftSegment.getAttribute("EndTime");
+
+							if(segmentTypeName.equals("REGULAR") && count==0) {
+								output.append("First Segment Details : ").append("\n");
+								count++;
+							}
+							else if(segmentTypeName.equals("BREAK")) {
+								output.append("Break Segment Details : ").append("\n");
+								count++;
+							}
+							else {
+								output.append("Third Segment Details : ").append("\n");
+								System.out.println("No Segment Type....");
+								count=0;
+							}
+							// Append the ShiftSegment details to StringBuilder
+							output .append("SegmentTypeName: ").append(segmentTypeName).append("\n")
+							.append("StartDate: ").append(startDate).append("\n")
+							.append("StartTime: ").append(startTime).append("\n")
+							.append("EndDate: ").append(endDate).append("\n")
+							.append("EndTime: ").append(endTime).append("\n");
+							scenario.createNode(new GherkinKeyword("Then"), "I verify the shift under kronos ").pass(output.toString());
+
+							System.out.println("\nSuccessfully verified the shift under kronos");
+						}
+					}
+				}
+			}
+			// Print the final output after all segments are processed
+			System.out.println(output.toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	public static String getTomorrowDateLikeKronosFormat() {//02/12/2024
+		// Get today's date in Sydney timezone
+		ZoneId sydneyZone = ZoneId.of("Australia/Sydney");
+		LocalDate today = LocalDate.now(sydneyZone);
+
+		// Add one day to get tomorrow's date
+		LocalDate tomorrow = today.plusDays(1);
+
+		// Format the date as '05/01/2001'
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String formattedDate = tomorrow.format(formatter);
+
+		System.out.println("Tomorrow's date in Sydney is: " + formattedDate);
+		return formattedDate;
+	}
+	public  String getDayAfterTomorrowDate(){
+		// Get today's date in Sydney timezone
+		ZoneId sydneyZone = ZoneId.of("Australia/Sydney");
+		LocalDate today = LocalDate.now(sydneyZone);
+
+		// Add two days to today's date
+		LocalDate futureDate = today.plusDays(2);
+
+		// Format the future date as 'Monday, 25 December'
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM");
+		String formattedDate = futureDate.format(formatter);
+		System.out.println("The date two days from today in Sydney is: " + formattedDate);
+		return formattedDate;
+
+
+	}
+	public  String getDayAfterTomorrowDateWithoutComma(){
+		// Get today's date in Sydney timezone
+		ZoneId sydneyZone = ZoneId.of("Australia/Sydney");
+		LocalDate today = LocalDate.now(sydneyZone);
+
+		// Add two days to today's date
+		LocalDate futureDate = today.plusDays(2);
+
+		// Format the future date as 'Monday, 25 December'
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd MMMM");
+		String formattedDate = futureDate.format(formatter);
+		System.out.println("The date two days from today in Sydney is: " + formattedDate);
+		return formattedDate;
+
+
+	}
+
+	public void gotoMyScheduleScreen(Client client2,String string) throws ClassNotFoundException, IOException {
+		
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.Schedule , client);
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.notificationsRefresh, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.myscheduleScreenButton, client);
+
+		String comma=commonFuncMobile.replaceDynamicValue(ShiftOfferObjects.changetext,",");
+		boolean commaFound=elementFound(comma,client); String xpath ="";
+		if(commaFound) {
+			String dayAfterTomorrowDate = getDayAfterTomorrowDate();
+			xpath = commonFuncMobile.replaceDynamicValue(ShiftOfferObjects.scrollToTargetPattern,dayAfterTomorrowDate);
+		}
+		else {
+			String dayAfterTomorrowDate =  getDayAfterTomorrowDateWithoutComma();
+			xpath = commonFuncMobile.replaceDynamicValue(ShiftOfferObjects.scrollToTargetPattern,dayAfterTomorrowDate);
+		}
+
+		if(client.isElementFound("NATIVE",xpath)) {
+			System.out.println("Element found succesfully....");
+		}
+		else 
+			client.swipeWhileNotFound("Down", 1200, 2000, "NATIVE", xpath, 0, 1000, 10, false);
+
+
+		StringBuilder builder=new StringBuilder();
+		String[] allShiftDeatils = getAllShiftDeatils(string);
+		xpath = commonFuncMobile.replaceDynamicValue(ShiftOfferObjects.scrollToTargetPattern,allShiftDeatils[0]);
+		boolean validStorePositionPagesEmployeeRequest = validStorePositionPagesEmployeeRequest(client,allShiftDeatils[0],allShiftDeatils[1]);
+		if(validStorePositionPagesEmployeeRequest) {
+			String[] time = verifyTimingInShiftRequestPages(client,string);
+			xpath = commonFuncMobile.replaceDynamicValue(ShiftOfferObjects.changetext,time[0]);
+
+			boolean times = elementFound(xpath,client);
+			if(times) {
+				xpath=commonFuncMobile.replaceDynamicValue(ShiftOfferObjects.changetext,time[1]);
+				times = elementFound(xpath,client);
+				if(times) {
+					String img =commonFuncMobile.CaptureMobileScreenshot("VerisionValidationPass",client);  
+					
+					 String base64Image = convertImageToBase64(img);
+					
+					scenario.createNode(new GherkinKeyword("Then"), "I verify the shift details under my shedule screen ").pass("I am able to see shift details under my shedule  ",MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+
+					commonFuncMobile.waitForElementClickable("NATIVE",xpath ,client);
+					confirmShiftDetailsUnderMySchedule(client,allShiftDeatils[1],allShiftDeatils[0],string);
+
+				}
+			}	
+
+		}
+
+	}
+
+
+	public String[] getAllShiftDeatils(String string) {//changetext
+		String[] inputDetails=new String[2];
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			String store =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Store").get(0);
+			String position =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Position").get(0);
+			inputDetails[0]=store;inputDetails[1]=position;
+		}
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			String store =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Store").get(0);
+			String position =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Position").get(0);
+			inputDetails[0]=store;inputDetails[1]=position;
+		}
+
+		return inputDetails;
+	}
+	@Then("I verify the shift in kronos")
+	public void i_verify_the_shift_in_kronos() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift in kronos").pass("Successfully verified the shift in kronos");
+			System.out.println("\nSuccessfully verified the shift in kronos");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift in kronos").fail("Failed to verify the shift in kronos");
+			System.out.println("\nFailed to verify the shift in kronos");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	@Then("I verify the shift in shift audit report")
+	public void i_verify_the_shift_in_shift_audit_report() throws ClassNotFoundException, IOException, SQLException, InterruptedException {
+		try {
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift in shift audit report").pass("Successfully verified the shift in shift audit report");
+			System.out.println("\nSuccessfully verified the shift in shift audit report");
+		} catch (Exception e) {
+			scenario.createNode(new GherkinKeyword("Then"), "I verify the shift in shift audit report").fail("Failed to verify the shift in shift audit report");
+			System.out.println("\nFailed to verify the shift in shift audit report");
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+	@When("Navigate to Schedule for {string}")
+	public void navigateToSchedule(String string) throws InterruptedException {
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			//String store =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Store").get(0);
+			//clickOnScheduleOption(client);
+			//clickOnScheduleSelectStore(store,client);
+			//shiftRefresh();
+			//			clickShiftCreationPlusIcon(client);
+			//			dateChange(client) ;
+			//			clickOnMainSegment(client);
+			//			timeEditForSegment(string,client);
+			//			clickOnShiftType(client);
+			//			String locationName=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Store").get(0);
+			//		  clickOnSelectedLocation(locationName,client);
+			//			String positionName=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Position").get(0);
+			//			clickOnPositionLocation(positionName,client);
+			/*//clickOnBadge(client);*/
+			//			clickOnSaveButton(client);
+			//			clickOnOfferedSpots(1,client);
+			//			clickOnOfferedAddEmployees(1,getUserNameAsTeamMember(string),client);
+			//	getAllDetailsRelatedEmployeePotentialScreen(client);
+			//			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.potentialExitScreen, client);
+			//			selectRadioButton(client) ;
+			//			commonFuncMobile.waitFor(4);
+			//			clickOnSaveButton(client);
+			//			sendDataNotesWhileCreationOfSegment(client,"Create First Segment");
+			//			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.saveButtonForCreateShift, client);
+			//			commonFuncMobile.waitFor(3);
+			//			verifyingSecondaryScreenValidations(client);
+			//			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.saveButtonForCreateShift, client);
+			//			shiftRefreshAfterSubmit(client);
+			//			boolean unFilledFound = elementFound(ShiftOfferObjects.unfilledVerifcation,client);
+			//			if(unFilledFound) {
+			//				System.out.println("Unfilled portion will be available under particular date on "+getTomorrowDateMonthYear());
+			//			}
+			//			else {
+			//				System.out.println("It is Unfilled......");
+			//			}
+			//			checkFilterAsStartDate( client);
+			//			checkNotificationsUnderManagerEmployeeRequests(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),"Pending") ;//12 Dec
+			//			String teamMemberuserName=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Username").get(0);
+			//			String teamManageruserName=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Username").get(0);
+			//			String teamMemberPassword=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Password").get(0);
+			//			loginAsTeamMember(teamMemberuserName,teamMemberPassword);
+			//			checkFilterAsStartDate(client);
+			//			goToMyRequests(client);
+			//			checkRequestUnderMyRequest(client,locationName,"Incoming");
+			//			checkRequestDetailsUnderTeamMember(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),"Incoming",string);
+			// to pass argument a teamleader employee
+			//			acceptShift(client);
+			//			verifyPendingApprovalStatus(client);//for pending approval method only..
+			//			getTypeOfStatus(client,locationName,"Pending approval");//team member screen
+			// for pending aprove verification under employee screen...
+			//			loginAsTeamManager(client);
+			//			checkFilterAsStartDate( client);
+			//			checkNotificationsUnderManagerEmployeeRequests(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),"Pending approval") ;//12 Dec
+			//			clickOnCards(client,positionName,locationName);
+			//			checkRequestDetailsUnderTeamMember(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),"Pending approval",string);
+			//			managerAcceptRequest(client,"Approval");
+			//			validationApproved(client,"Approved");
+			//			goToMyRequests(client);
+			//
+			//			gotoArcheive(client );
+			//			String complete = checkRequestUnderMyRequestGetType(client,locationName,"Completed");
+			//			printDataStatus(complete);
+			//			loginAsTeamManager(client);//team member login
+			//			clickOnNotification(client);
+			//			checkFilterAsStartDate( client);
+			//			goToMyRequests(client);
+			//			gotoArcheive(client );
+			//			String membercomplete = checkRequestUnderMyRequestGetType(client,locationName,"Approved");
+			//			printDataStatus(membercomplete);
+			//			checkRequestUnderMyRequest(client,locationName,"Approved");
+			//			checkRequestDetailsUnderTeamMember(client,locationName,positionName,commonFuncMobile.getSydneyAddDayMonthTime(),"Approved",string);
+			//			validationApproved(client,"Approved");
+			//			clickOnScheduleOption(client);
+			//			clickOnScheduleSelectStore(store,client);
+			//			shiftRefreshAfterSubmit(client);
+			//			filterShiftMySchedule(getUserNameAsTeamMember(string),client);
+			//			confirmShiftDetailsUnderMySchedule(client,positionName,locationName,string);
+		}
+	}
+	public void confirmShiftDetailsUnderMySchedule(Client client, String positionName, String locationName,String scenarioName) throws ClassNotFoundException, IOException {
+		System.out.println("======================Shift details====================");
+		
+		String tomorrowDateMonthYear = getTomorrowDateMonthYear();
+		Boolean bool=false;
+		String[] split = tomorrowDateMonthYear.split(" ");
+		StringBuilder builder=new StringBuilder();
+		String shiftDetails= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,(split[0]+" "+split[1]));	
+		bool=elementFound(shiftDetails,client);
+		if(bool) {
+			builder.append("Shift created on "+ tomorrowDateMonthYear).append("\n");
+			System.out.println("Submitted Shift date is "+ tomorrowDateMonthYear);
+		}
+		else {
+			System.out.println("Submitted date is Not showing.....");
+		}
+		builder.append("LocationName is "+locationName+"").append("\n");
+		builder.append("PositionName is "+positionName+"").append("\n");
+		String time=validationTime(client,scenarioName);
+		System.out.println("Time pattern under this shift : "+time);
+		positionName=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,positionName);	
+		bool=elementFound(positionName,client);;
+		builder.append("Shift Timings is "+time+"").append("\n");
+		if(bool) {
+
+			System.out.println("Submitted Shift Position is "+ positionName);
+		}
+		else {
+			System.out.println("Submitted position is Not showing.....");
+		}
+		locationName=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,locationName);	
+
+		bool=elementFound(locationName,client);
+		if(bool) {
+
+			System.out.println("Submitted Shift location is "+ locationName);
+		}
+		else {
+			System.out.println("Submitted location is Not showing.....");
+		}
+		String userName = getUserNameAsTeamMember(scenarioName);
+		if(userName.equals("")) {
+			System.out.println("User is not found....");
+		}
+		else
+		{
+			builder.append("UserName is "+userName+"").append("\n");
+			System.out.println("UserName is "+userName+" assigned for shift is "+tomorrowDateMonthYear+" and time is "+time);
+		}
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.myshiftexitbutton, client);
+		String threesegmentDetails = getThreesegmentDetails(scenarioName);
+		builder.append(threesegmentDetails).append("\n");
+		
+		String img =commonFuncMobile.CaptureMobileScreenshot("Daily shift page  pass",client);
+		 String base64Image = convertImageToBase64(img);
+		scenario.createNode(new GherkinKeyword("Then"), "I verify the shift details daily shift screen ").pass("Successfully verified the shift details under Daily shift screen are  "+builder.toString(),MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+
+	}
+	public String  getUserFullName(Client client,String employeeNumber) {
+		String userName= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,employeeNumber);	
+		Boolean bool=elementFound(userName,client);
+		if(bool) {
+			userName=commonFuncMobile.getText("NATIVE",userName ,client);
+		}
+		else {
+			System.out.println("Submitted location is Not showing.....");
+			userName="";
+		}
+
+		return userName;
+	}
+	public void filterShiftMySchedule(String employeeName,Client client,String positionName) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.shiftFilter, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.EmployeeChevron, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.searchButtonForAddEmployes, client);
+		commonFuncMobile.elementSendText("NATIVE",ShiftOfferObjects.searchButtonForAddEmployes,employeeName,client);
+		String employee= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,employeeName);	
+		commonFuncMobile.waitForElementClickable("NATIVE",employee, client);
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.EmployeeFilterLeftButton, client);
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects. positionChevron, client);
+		clickOnPositionLocationUnderDailyShift(positionName,client);
+		commonFuncMobile.waitFor(3);
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects. filterUIASwitch, client);
+		commonFuncMobile.waitFor(3);
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.saveButtonForCreateShift, client);
+		commonFuncMobile.waitForElementClickable("NATIVE",employee, client);	
+	}
+	public void printDataStatus(String string) {
+		System.out.println("Status stage is "+string);
+	}
+	public void gotoArcheive(Client client ) throws ClassNotFoundException, IOException {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects. archeived, client);
+		
+		String img =commonFuncMobile.CaptureMobileScreenshot("Archeive page loaded pass",client);
+		 String base64Image = convertImageToBase64(img);
+		scenario.createNode(new GherkinKeyword("Then"),"Archeive page ").pass("Archeive Tab clicked successfully",MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+
+	}
+	public void clickOnNotification(Client client) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.notificationsBar, client);
+	}
+	public void validationApproved(Client client,String typeOfPending,String person) throws ClassNotFoundException {
+		boolean typeOfStatusOfShift = getTypeOfStatusOfShift(typeOfPending,client);
+		if(typeOfStatusOfShift) {
+			System.out.println(typeOfPending +" is visible under request details page");
+
+		}
+		activityLogEmployeeRequestsApproved(client,3);
+		activityLogEmployeeRequestsAccepted(client,2);
+		activityLogEmployeeRequests(client,2,person);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.acceptRequestLeftButton, client);
+	}
+	public void managerAcceptRequest(Client client,String typeOfWorkDone) {
+
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.shiftApprovalManager, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.acceptManager, client);
+
+	}
+
+	public void clickOnCards(Client client,String positionName,String locationName) {
+		String validtionRequestType = validtionRequestType(client,positionName,locationName);
+		boolean elementFound = elementFound(validtionRequestType,client);
+		if(elementFound) {
+			commonFuncMobile.waitForElementClickable("NATIVE",validtionRequestType, client);
+
+		}
+	}
+	public String getUserNameAsTeamMember(String string) {
+		String userName="";
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			userName=(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Username").get(0);
+			userName=getUserName(userName);
+		}
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			userName=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Username").get(0);
+			userName=getUserName(userName);
+		}
+		return userName;
+	}
+	public void getTypeOfStatus(Client client,String locationName,String type) {
+		String checkRequestUnderMyRequestGetType = checkRequestUnderMyRequestGetType(client,locationName,type);
+		System.out.println("Type of Status after accept by team leader under my request screeen "+ checkRequestUnderMyRequestGetType);
+	}
+	public void verifyPendingApprovalStatus(Client client) throws ClassNotFoundException {
+		boolean typeOfStatusOfShift = getTypeOfStatusOfShift("Pending approval",client);
+		if(typeOfStatusOfShift) {
+			//scenario.createNode(new GherkinKeyword("Then"), "Shift Request under My Request Page").pass("I am able to see Pending approval under my request Page ");
+
+			System.out.println(typeOfStatusOfShift +" is succesfully visible under request details page");
+		}
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.acceptRequestLeftButton, client);
+
+	}
+	public void loginAsTeamManager(Client client) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.more, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.settings, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.ManageAccounts, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.shiftAccounts, client);
+
+	}
+	public void acceptShift(Client client) {
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.acceptRequest, client);
+	}
+	public void checkRequestUnderMyRequest(Client client,String locationName,String typeOfShift) throws ClassNotFoundException {
+		boolean validStorePositionPagesEmployeeRequest = validStorePositionPagesEmployeeRequest(client,locationName,typeOfShift);
+		if(validStorePositionPagesEmployeeRequest) {
+			scenario.createNode(new GherkinKeyword("Then"), "Shift Request under My Request Page").pass("I am able to see "+typeOfShift+" under my request Page ");
+			String xpath = validtionRequestType(client,locationName,typeOfShift);
+			commonFuncMobile.waitForElementClickable("NATIVE",xpath , client);
+		}
+
+	}
+	public String checkRequestUnderMyRequestGetType(Client client,String locationName,String typeOfShift) {
+		String type="";
+		boolean validStorePositionPagesEmployeeRequest = validStorePositionPagesEmployeeRequest(client,locationName,typeOfShift);
+		if(validStorePositionPagesEmployeeRequest) {
+			String xpath = validtionRequestType(client,locationName,typeOfShift);
+			type= commonFuncMobile.getText("NATIVE",xpath ,client);
+
+		}
+		return type;
+	}
+	public void checkRequestDetailsUnderTeamMember(Client client2, String locationName, String positionName,
+			String sydneyAddDayMonthTime, String typeOfPending,String scenarioName,String person) throws ClassNotFoundException, IOException
+	{
+		boolean detailsFound=false;String getData="";
+		String teamManagerName = getUserNameForValidation(scenarioName);
+		boolean elementFound = elementFound(ShiftOfferObjects.requestDetailsPage,client);
+		StringBuilder builder=new StringBuilder();
+		if(elementFound) {
+			System.out.println("Successfully Reached to RequestDetailsPage.....");
+			boolean typeOfStatusOfShift = getTypeOfStatusOfShift(typeOfPending,client);
+			if(typeOfStatusOfShift) {
+				//scenario.createNode(new GherkinKeyword("Then"), person+" Request type as ").pass("Successfully verified the Request type of "+person +" is "+typeOfPending);
+				builder.append(person+" request type as "+typeOfPending).append("\n");
+				System.out.println(typeOfPending +" is visible under request details page");
+			}
+			String teamManagerNameVerfication=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,teamManagerName);
+			detailsFound=elementFound( teamManagerNameVerfication,client);
+			if(detailsFound) {
+				getData = commonFuncMobile.getText("NATIVE", teamManagerNameVerfication ,client);
+				builder.append(person+" name is "+getData).append("\n");
+				//scenario.createNode(new GherkinKeyword("Then"), person+" name  as ").pass("Successfully verified the "+person +" name is "+getData);
+
+				System.out.println("Requested by "+person+"r is "+getData);
+
+			}
+			else {
+				System.out.println(person+" is not found................");
+			}
+			detailsFound = validStorePositionPagesEmployeeRequest(client,positionName,locationName);
+			if(detailsFound) {
+				System.out.println("Store and position both are found in request details page....on date "+sydneyAddDayMonthTime);
+				System.out.println("Store "+locationName);
+				System.out.println("Position : "+positionName);
+				//scenario.createNode(new GherkinKeyword("Then"), person+" address to ").pass("Successfully verified the "+person +" location is "+locationName+" and position Name is "+positionName);
+				builder.append(person +"belongs to"+locationName+" Store ").append("\n");
+				builder.append(person +"belongs to"+positionName+" position  ").append("\n");
+
+			}
+			else {
+				System.out.println("Both are not found .......");
+			}
+			String validationTime = validationTime(client,scenarioName);
+			builder.append("Shift Timing is "+validationTime+"").append("\n");
+			String threesegmentDetails = getThreesegmentDetails(scenarioName);
+			builder.append(threesegmentDetails).append("\n");
+			
+			String img =commonFuncMobile.CaptureMobileScreenshot("Request Details page status pass",client);
+			 String base64Image = convertImageToBase64(img);
+			scenario.createNode(new GherkinKeyword("Then"), person+" Detais under Request Page ").pass(builder.toString(),MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+
+			activityLogEmployeeRequests(client,2,person);
+
+		}
+
+		else {
+			System.out.println("Request details page is not opend till..............");
+		}
+
+	}
+	public String getThreesegmentDetails(String scenarioName) {
+		StringBuilder builder=new StringBuilder();
+		boolean found=elementFound( ShiftOfferObjects.threeSegmentVerification,client);
+		if(found) {
+				commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.threeSegmentVerification , client);
+				commonFuncMobile.waitFor(3);
+				String [] validate=getThreeSegmentsDetails( client,scenarioName);
+				String startTime[]=validate[0].split(" ");String endTime[]=validate[1].split(" ");
+				String startTimeVerification=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.changeTwotext,startTime[0],endTime[0]);
+				
+			 found=elementFound(startTimeVerification,client);
+			 if(found) {
+				 builder.append("First Segment Details : ").append("\n");
+				 builder.append(validate[0]+" - "+validate[1]).append("\n");
+				
+			 }
+			 String breakstartTime[]=validate[2].split(" ");String breakendTime[]=validate[3].split(" ");
+			 startTimeVerification=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.changeTwotext,breakstartTime[0],breakstartTime[0]);
+			 found=elementFound(startTimeVerification,client);
+			 if(found) {
+				 builder.append("Break Segment Details : ").append("\n");
+				 builder.append(validate[2]+" - "+validate[3]).append("\n");
+			 }
+			 String endstartTime[]=validate[4].split(" ");String endendTime[]=validate[5].split(" ");
+			 startTimeVerification=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.changeTwotext,endstartTime[0],endendTime[0]);
+			 found=elementFound(startTimeVerification,client);
+			 if(found) {
+				 builder.append("Third Segment Details : ").append("\n");
+				 builder.append(validate[4]+" - "+validate[5]).append("\n");
+			 }
+			 commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.exitThreeSegmentPage , client);
+				commonFuncMobile.waitFor(3);
+			 
+		 
+		}
+		return builder.toString()+"";
+	}
+	public String[] getThreeSegmentsDetails(Client client,String scenarioName) {
+		String[] details = new String[18];
+		if(scenarioName.equals("Creation of Three Segments for No Rule Violation")) {
+		details[0] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_firstsegment").get(0);
+		details[1] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_firstsegment").get(0);
+		details[2] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMeridian_firstsegment").get(0);
+		details[3] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_firstsegment").get(0);
+		details[4] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_firstsegment").get(0);
+		details[5] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMeridian_firstsegment").get(0);
+		details[6] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_breaksegment").get(0);
+		details[7] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_breaksegment").get(0);
+		details[8] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMeridian_breaksegment").get(0);
+		details[9] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_breaksegment").get(0);
+		details[10] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_breaksegment").get(0);
+		details[11] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMeridian_breaksegment").get(0);
+		details[12] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_secondsegment").get(0);
+		details[13] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_secondsegment").get(0);
+		details[14] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMeridian_secondsegment").get(0);
+		details[15] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_secondsegment").get(0);
+		details[16] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_secondsegment").get(0);
+		details[17] = (String) OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMeridian_secondsegment").get(0);
+		String startTimeFirstSegment = details[0] + ":" + details[1] + " " + details[2];
+		String endTimeFirstSegment = details[3] + ":" + details[4] + " " + details[5];
+		String startTimeBreakSegment = details[6] + ":" + details[7] + " " + details[8];
+		String endTimeBreakSegment = details[9] + ":" + details[10] + " " + details[11];
+		String startTimeSecondSegment = details[12] + ":" + details[13] + " " + details[14];
+		String endTimeSecondSegment = details[15] + ":" + details[16] + " " + details[17];
+		String time[]=new String[6];
+		time[0] = startTimeFirstSegment;
+		time[1] = endTimeFirstSegment;
+		time[2] = startTimeBreakSegment;
+		time[3] = endTimeBreakSegment;
+		time[4] = startTimeSecondSegment;
+		time[5] = endTimeSecondSegment;
+		System.out.println("First Segment Start Time: " + startTimeFirstSegment);
+		System.out.println("First Segment End Time: " + endTimeFirstSegment);
+		System.out.println("Break Segment Start Time: " + startTimeBreakSegment);
+		System.out.println("Break Segment End Time: " + endTimeBreakSegment);
+		System.out.println("Second Segment Start Time: " + startTimeSecondSegment);
+		System.out.println("Second Segment End Time: " + endTimeSecondSegment);
+		return time;
+		}
+		System.out.println("Data are not matched....");
+		return new String[10];
+	}
+	public String validationTime(Client client,String scenarioName) {
+		String[] verifyTimingInShiftRequestPages = verifyTimingInShiftRequestPages(client,scenarioName);
+		String shiftTiming=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,verifyTimingInShiftRequestPages[0]);
+		boolean elementFound = elementFound(shiftTiming,client);String time="Not Matching...";
+		if(elementFound) {
+			shiftTiming=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,verifyTimingInShiftRequestPages[1]);
+			elementFound = elementFound(shiftTiming,client);
+			System.out.println("Time pattern submitted for offering a shift.."+ verifyTimingInShiftRequestPagesAMPM(client,scenarioName));
+			time=verifyTimingInShiftRequestPagesAMPM(client,scenarioName);
+		}
+		else {
+			System.out.println("Time pattern submitted for offering a shift.."+verifyTimingInShiftRequestPages);	
+		}
+		return time;
+	}
+	public void activityLogEmployeeRequests(Client client,int count,String person) throws ClassNotFoundException {
+		String text="";
+		System.out.println("===========================");
+		swipeElementVisible(client,ShiftOfferObjects.activityLog1);
+		//scenario.createNode(new GherkinKeyword("Then"), "Activity Log Details for \n"+person).pass("Activity Log Details ");
+		StringBuilder builder =new StringBuilder();
+		for(int i=0;i<count;i++) {
+
+			String xpath=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.activityLog,(i+1));
+			text = commonFuncMobile.getText("NATIVE",xpath,client);
+			if(text.equals(null) || text.equals("")) {
+				break;
+			}
+			builder.append(text).append("\n");
+			System.out.println("Activity log details "+text);
+
+		}
+		System.out.println("===========================");
+		scenario.createNode(new GherkinKeyword("Then"), "Activity Log Deatils For Submission ").pass(builder.toString());
+
+	}
+	public void activityLogEmployeeRequestsApproved(Client client,int count) throws ClassNotFoundException {String text="";
+	System.out.println("===========================");
+	StringBuilder builder =new StringBuilder();
+	swipeElementVisible(client,ShiftOfferObjects.activityLog1);
+	for(int i=0;i<count;i++) {
+
+		String xpath=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.activityLog2,(i+1));
+		Boolean elementFound = elementFound(xpath,client);
+		if(elementFound) {
+			text = commonFuncMobile.getText("NATIVE",xpath,client);
+			builder.append(text).append("\n");
+
+		}
+		else {
+			xpath=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.activityLog4,(i+1));
+			text = commonFuncMobile.getText("NATIVE",xpath,client);
+			builder.append(text).append("\n");
+
+		}
+		System.out.println("Activity log details "+text);
+	}
+	System.out.println("===========================");
+	scenario.createNode(new GherkinKeyword("Then"), "Activity Log Deatils For Approval ").pass(builder.toString());
+
+	}
+	public void activityLogEmployeeRequestsAccepted(Client client,int count) throws ClassNotFoundException {String text="";
+	System.out.println("===========================");
+	StringBuilder builder =new StringBuilder();
+	swipeElementVisible(client,ShiftOfferObjects.activityLog1);
+	for(int i=0;i<count;i++) {
+
+		String xpath=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.activityLog3,(i+1));
+		text = commonFuncMobile.getText("NATIVE",xpath,client);
+		builder.append(text).append("\n");
+		System.out.println("Activity log details "+text);
+	}
+	System.out.println("===========================");
+	scenario.createNode(new GherkinKeyword("Then"), "Activity Log Deatils For Acceptance ").pass(builder.toString());
+	}
+	public String[] verifyTimingInShiftRequestPages(Client client,String string) {
+		String[] time=new String[2];
+		String finalTime="",startHour="",startMinute="",startTime="",endHour="",endMinute="",endTime="";
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			startHour=(String)  OfferShiftSheetData.get("WarningRuleViloation_startHour_firstsegment").get(0);
+			startMinute=(String)  OfferShiftSheetData.get("WarningRuleViloation_startMinute_firstsegment").get(0);
+			endHour=(String)  OfferShiftSheetData.get("WarningRuleViloation_endHour_firstsegment").get(0);
+			endMinute=(String)  OfferShiftSheetData.get("WarningRuleViloation_endMinute_firstsegment").get(0);
+
+		}
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			startHour=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_firstsegment").get(0);
+			startMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_firstsegment").get(0);
+			endHour=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_secondsegment").get(0);
+			endMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_secondsegment").get(0);
+		}//endhour and endminute as last third segment
+
+		startTime=startHour+":"+startMinute;
+		time[0]=startTime;
+		endTime=endHour+":"+endMinute;
+		time[1]=endTime;
+		String totalTime=startTime+endTime;
+		System.out.println("Total time  :"+totalTime);
+
+		return time;
+	}
+	public String verifyTimingInShiftRequestPagesAMPM(Client client,String string) {
+		String finalTime="",startHour="",startMinute="",startTime="",endHour="",endMinute="",endTime="";
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			startHour=(String)  OfferShiftSheetData.get("WarningRuleViloation_startHour_firstsegment").get(0);
+			startMinute=(String)  OfferShiftSheetData.get("WarningRuleViloation_startMinute_firstsegment").get(0);
+			endHour=(String)  OfferShiftSheetData.get("WarningRuleViloation_endHour_firstsegment").get(0);
+			endMinute=(String)  OfferShiftSheetData.get("WarningRuleViloation_endMinute_firstsegment").get(0);
+
+		}//9:30 am – 12:30 pm
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			startHour=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_firstsegment").get(0);
+			startMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_firstsegment").get(0);
+			endHour=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_firstsegment").get(0);
+			endMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_firstsegment").get(0);
+		}
+
+		startTime=startHour+":"+startMinute+" AM - ";
+		endTime=endHour+":"+endMinute+" PM";
+		String totalTime=startTime+endTime;
+		System.out.println("Total time  :"+totalTime);
+
+		return totalTime;
+	}
+	public boolean getTypeOfStatusOfShift(String typeOfStatus,Client client) {
+		Boolean bool=false;String typeOfState="";
+		if( typeOfStatus.equals("Pending recipient")) {
+			typeOfState=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,typeOfStatus);
+			bool = elementFound(typeOfState,client);
+		}
+		else if( typeOfStatus.equals("Pending approval")) {
+			typeOfState=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,typeOfStatus);
+			bool = elementFound(typeOfState,client);
+		}
+		else if( typeOfStatus.equals("Approved")) {
+			typeOfState=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,typeOfStatus);
+			bool = elementFound(typeOfState,client);
+		}
+
+		return bool;
+	}
+	public String getUserNameForValidation(String string) {
+		String userName="";
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			userName =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Manager Username").get(0);
+			userName=getUserName(userName);
+		}
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			userName =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Manager Username").get(0);
+			userName=getUserName(userName);}
+		return userName;
+	}//WarningRuleViloation_Team Member Username
+	public String getUserNameForValidationInKronosTeamMember(String string) {
+		String userName="";
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			userName =(String)  OfferShiftSheetData.get("WarningRuleViloation_Team Member Username").get(0);
+			userName=getUserName(userName);
+		}
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			userName =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_Team Member Username").get(0);
+			userName=getUserName(userName);}
+		return userName;
+	}
+	public void loginAsTeamMember(String userName,String password) throws InterruptedException, ClassNotFoundException, IOException {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.more, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.settings, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.ManageAccounts, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.addAccount, client);
+		commonStepDefnitions.wjAppLogin(userName,password,client);
+	}
+	public void checkFilterAsStartDate(Client client,String employeeName) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.notificationsBar, client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.employeeRequestFilterButton, client);
+//		boolean elementFound = elementFound(ShiftOfferObjects.FromButtonFilter,client);
+//		if(elementFound) {
+//
+//			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.FromButtonFilter, client);
+//			dateChangeToday(client);
+//		}
+//		else
+//		client.swipe("down", 50,1000);
+		commonFuncMobile.waitFor(5);
+			client.swipe("down", 50,1000);
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.employeeFilterChevron, client);
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.searchButtonForAddEmployes, client);
+			commonFuncMobile.elementSendText("NATIVE",ShiftOfferObjects.searchButtonForAddEmployes,employeeName,client);
+			String employee= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,employeeName);	
+			commonFuncMobile.waitForElementClickable("NATIVE",employee, client);
+			commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.EmployeeFilterLeftButton, client);commonFuncMobile.waitFor(5);
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.saveButtonForCreateShift, client);	
+		commonFuncMobile.waitFor(5);
+	}
+
+	public boolean validStorePositionPagesEmployeeRequest(Client client,String  positionName,String locationName) {
+		String date=commonFuncMobile.getSydneyAddDayMonthTime();
+		String xpath1=commonFuncMobile.replaceDynamicValue(ShiftOfferObjects.validateEmployeeRequetsFileds, date, positionName);
+		String xpath2=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects. validateEmployeeRequetsFileds2, locationName);
+		String xpath3=xpath1+xpath2;
+		System.out.println("Xpath3:======="+xpath3);
+		swipeElementVisible(client,xpath3);
+		boolean elementFound = elementFound(xpath3,client);
+		return elementFound;
+	}
+	public String validtionRequestType(Client client,String  positionName,String locationName) {
+		String date=commonFuncMobile.getSydneyAddDayMonthTime();
+		String xpath1=commonFuncMobile.replaceDynamicValue(ShiftOfferObjects.validateEmployeeRequetsFileds, date, positionName);
+		String xpath2=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects. validateEmployeeRequetsFileds2, locationName);
+		String xpath3=xpath1+xpath2;
+
+		return xpath3;
+	}
+	//put as descending order first manually.....
+	public void checkNotificationsUnderManagerEmployeeRequests(Client client,String locationName, String positionName,String date,String pendingDataField) throws Exception {
+
+		String xpath1=commonFuncMobile.replaceDynamicValue(ShiftOfferObjects.validateEmployeeRequetsFileds, date, positionName);
+		String xpath2=commonFuncMobile.replaceDynamicValue( ShiftOfferObjects. validateEmployeeRequetsFileds2, locationName);
+		String xpath3=xpath1+xpath2;
+		System.out.println("Xpath3:======="+xpath3);
+		swipeElementVisible(client,xpath3);
+		boolean elementFound = elementFound(xpath3,client);
+		if(elementFound) {
+			String pendingData= xpath3+(commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.validateEmployeeRequetsPendingStatus,  pendingDataField));
+			System.out.println("pendingData:"+pendingData);
+			pendingData = commonFuncMobile.getText("NATIVE", pendingData ,client);
+			System.out.println("==========pendingData========="+pendingData+"*********************");
+			if(pendingData.equals("Pending recipient")) {
+				System.out.println("Succesfully Pending recipient fetching out....");
+			}
+			else if(pendingData.equals("Incoming")) {
+				System.out.println("Succesfully Incoming fetching out....");
+				commonFuncMobile.waitForElementClickable("NATIVE", pendingData, client);	
+				commonFuncMobile.waitFor(3);
+			}
+			else if(pendingData.equals("Pending approval")) {
+				System.out.println("Succesfully Pending approval fetching out under my request screen....");
+			}
+			else {
+				throw new Exception();
+			}
+		}
+		else {
+			System.out.println("Time is not framing.....");
+		}
+	}
+
+	public void verifyingSecondaryScreenValidations(Client client2) throws ClassNotFoundException, IOException {
+		String employeeName= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects. secondaryScreenEmployeeVerification,employeeNameDetails);
+		boolean employeeFound = elementFound(employeeName,client);
+		if(employeeFound) {
+			System.out.println("Both screen have same employee name "+employeeName);
+		}
+		else {
+			System.out.println("Both screen employee names are not valid...");
+		}
+		for(int i=0;i<certificateStorageList.size();i++) {
+			if(i==0)
+				getCertificatesForWarningRuleViolations( client,"Secondary Rule Violation Screen");
+			String certificateName= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects. secondaryScreenEmployeeVerification,certificateStorageList.get(i));
+			boolean certificateFound = elementFound(certificateName,client);;
+			if(certificateFound) {
+				System.out.println("Both screen have same Certificate name "+certificateName);
+			}
+			else {
+				System.out.println("Both screen certificate names are not valid...");
+			}
+		}
+		boolean warningRuleViolationFound = elementFound(ShiftOfferObjects.secondaryScreenWarningRuleViolation,client);
+		if(warningRuleViolationFound) {
+			System.out.println("warningRuleViolationFound");
+		}
+		else {
+			System.out.println("warningRuleViolation is not Found");
+		}
+		
+		String img =commonFuncMobile.CaptureMobileScreenshot("SeconadryRuleViolationPass",client);
+		 String base64Image = convertImageToBase64(img);
+		
+		
+		scenario.createNode(new GherkinKeyword("Then"), "I validate rule violations in secondary Rule Violation Screen").pass("Secondary rule violation screen for the selected employee details is "
+				+ "employeeName "+employeeNameDetails+" \n",MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+
+
+	}
+
+	public void clickOnBadge(Client client2) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.badgeButton, client);
+		boolean foundBadge = elementFound(ShiftOfferObjects.badgeSelectFirstButton,client);
+		if(foundBadge) {
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.badgeSelectFirstButton, client);	
+		}
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.leftArrowButton, client);
+
+	}
+
+	public void sendDataNotesWhileCreationOfSegment(Client client,String notepadData) {
+		swipeElementVisible(client,ShiftOfferObjects.Notes);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.sendDataToNotes, client);
+		commonFuncMobile.elementSendText("NATIVE",ShiftOfferObjects.sendDataToNotes,notepadData,client);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.NotesDone, client);
+	}
+	public void selectRadioButton(Client client) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.selectRadioButtonForEmployee, client);
+
+	}
+	public void getCertificatesForWarningRuleViolations(Client client2,String screen) throws ClassNotFoundException {
+		certificateStorageList.clear();
+		int certificateCounts = getElementCount("NATIVE",ShiftOfferObjects.potentialScreenNoOfCerificates,client);
+		for(int i=0;i<certificateCounts;i++) {
+			String certificate= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.potentialScreenCerificate2,(i+1));
+			String certificateData = commonFuncMobile.getText("NATIVE",certificate,client);
+			certificateStorageList.add(certificateData);
+			commonFuncMobile.waitFor(2);
+		}
+		System.out.println("***************Certificates ***********************");
+		// Create a node for the first certificate with the title
+		StringBuilder certificateDetails = new StringBuilder();
+		for (int i = 0; i < certificateStorageList.size(); i++) {
+			certificateDetails.append("Certificate name is ").append(certificateStorageList.get(i)).append("\n");
+		}
+
+		// Log to Extent report after collecting all certificates
+		scenario.createNode(new GherkinKeyword("Then"), "Warning rule violation of " + screen + " for employee certificates").pass(certificateDetails.toString());
+
+		// Log to console (optional)
+		System.out.println(certificateDetails.toString());
+
+
+	}
+
+	public boolean elementFound(String xpath,Client client) {
+		if(client.isElementFound("NATIVE", xpath)) {
+			return true;
+		}
+		else {
+			commonFuncMobile.waitFor(5);
+			return false;
+		}
+	}
+	public String getDetailsOfPageElements(String xpath,Client client) {
+		String text ="";
+		if(client.isElementFound("NATIVE", xpath)) {
+			text = commonFuncMobile.getText("NATIVE",xpath,client);
+		}
+		else {
+			commonFuncMobile.waitFor(5);
+			if(client.isElementFound("NATIVE", xpath)) {
+				text = commonFuncMobile.getText("NATIVE",xpath,client);
+			}
+			else
+			{
+				client.swipe("down",100,1000 ); 
+				text = commonFuncMobile.getText("NATIVE",xpath,client);
+			}
+		}
+		return text;
+	}
+	public void getAllDetailsRelatedEmployeePotentialScreen(Client client) throws ClassNotFoundException, IOException{
+
+		employeeNameDetails = getDetailsOfPageElements(ShiftOfferObjects.potentialScreenEmployeeDetails,client);
+		employeeAvailability=getDetailsOfPageElements(ShiftOfferObjects.potentialScreenEmployeeAvailability,client);
+		employeeLocationDetails = getDetailsOfPageElements(ShiftOfferObjects.potentialScreenPrimaryLocation,client);
+		employeePositionDetails=getDetailsOfPageElements(ShiftOfferObjects.potentialScreenPrimaryPosition,client);
+		employeeTypeDetails = getDetailsOfPageElements(ShiftOfferObjects.potentialScreenEmployementType,client);
+		System.out.println("=================================================");
+		System.out.println(" employeeNameDetails  "+ employeeNameDetails );
+		System.out.println(" employeeAvailability  "+ employeeAvailability);
+		System.out.println("  employeeLocationDetails  "+  employeeLocationDetails );
+		System.out.println(" employeePositionDetails  "+ employeePositionDetails );
+		System.out.println("employeeTypeDetails "+ employeeTypeDetails );
+		System.out.println("=================================================");
+		client.swipe("down",100,1000 );
+		String img =commonFuncMobile.CaptureMobileScreenshot("PotentilaScreenValidationPass",client);  
+		
+		 String base64Image = convertImageToBase64(img);
+		scenario.createNode(new GherkinKeyword("Then"), "I view the potential assignee screen for the selected employee").pass("potential assignee screen for the selected employee details are \n"
+				+ "employeeName "+employeeNameDetails+" \n"+"Availability Status of "+employeeNameDetails+" is "+employeeAvailability
+				+"\n Location is "+employeeLocationDetails+"\n"+" Position is "+employeePositionDetails+"\n Employement type is "+employeeTypeDetails, MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
+
+	}
+	public void clickOnOfferedAddEmployees(int count,String username,Client client) {//only validate for user employee id..
+		for(int i=0;i<count;i++) {
+			swipeElementVisible(client,ShiftOfferObjects.offeredAddEmployeeButton);
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.offeredAddEmployeeButton, client);
+			commonFuncMobile.waitFor(2);
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.searchButtonForAddEmployes, client);
+			commonFuncMobile.elementSendText("NATIVE",ShiftOfferObjects.searchButtonForAddEmployes,username,client);
+			commonFuncMobile.waitFor(2);
+			String employee= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.searchEmployeeUnderOfferedSpots,username);	
+			commonFuncMobile.waitForElementClickable("NATIVE",employee, client);
+		}
+	}
+	public void clickOnOfferedSpots(int count,Client client) {
+		swipeElementVisible(client,ShiftOfferObjects.offeredSpotsIncrement);
+		for(int i=0;i<count;i++) {
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.offeredSpotsIncrement, client);
+			commonFuncMobile.waitFor(2);
+		}
+	}
+	public void clickOnPositionLocation(String positionName,Client client) {
+		System.out.println("position is "+positionName+" *****************");
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.positionButton, client);
+		commonFuncMobile.waitFor(3);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.searchButton, client);
+		commonFuncMobile.elementSendText("NATIVE",ShiftOfferObjects.searchButton,positionName,client);
+		commonFuncMobile.waitFor(2);
+		String position= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.selectPosition,positionName);
+		if(client.isElementFound("NATIVE", position))
+			commonFuncMobile.waitForElementClickable("NATIVE", position, client);
+		else {
+			client.swipe("down",50,1000 );
+			if(client.isElementFound("NATIVE",  position))
+				commonFuncMobile.waitForElementClickable("NATIVE", position, client);
+			else
+				System.out.println("==============Position  is Not found.........");
+		}
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.leftArrowButton, client);
+
+	}
+	public void clickOnPositionLocationUnderDailyShift(String positionName,Client client) {
+		System.out.println("position is "+positionName+" *****************");
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.searchButton, client);
+		commonFuncMobile.elementSendText("NATIVE",ShiftOfferObjects.searchButton,positionName,client);
+		commonFuncMobile.waitFor(2);
+		String position= commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.selectPosition,positionName);
+		if(client.isElementFound("NATIVE", position))
+			commonFuncMobile.waitForElementClickable("NATIVE", position, client);
+		else {
+			client.swipe("down",50,1000 );
+			if(client.isElementFound("NATIVE",  position))
+				commonFuncMobile.waitForElementClickable("NATIVE", position, client);
+			else
+				System.out.println("==============Position  is Not found.........");
+		}
+		commonFuncMobile.waitForElementClickable("NATIVE",ShiftOfferObjects.EmployeeFilterLeftButton, client);
+	}
+
+	public void clickOnSaveButton(Client client) {
+		if(client.isElementFound("NATIVE", ShiftOfferObjects.saveButton))
+			commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.saveButton, client);
+		else {
+			commonFuncMobile.waitFor(5);
+			if(client.isElementFound("NATIVE",  ShiftOfferObjects.saveButton))
+				commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.saveButton, client);
+			else
+				System.out.println("==============Position  is Not found.........");
+		}
+	}
+	public void clickOnSelectedLocation(String locationName,Client client) {
+		System.out.println("position is "+locationName+" *****************");
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.locationButton, client);
+		commonFuncMobile.waitFor(3);
+		String location = commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.selectParticularLocation,locationName);
+		if(client.isElementFound("NATIVE", location))
+			commonFuncMobile.waitForElementClickable("NATIVE", location, client);
+		else {
+			client.swipe("down",50,1000 );
+			if(client.isElementFound("NATIVE", location))
+				commonFuncMobile.waitForElementClickable("NATIVE", location, client);
+			else
+				System.out.println("==============Store is Not found.........");
+		}
+
+	}
+	public void clickOnShiftTypeMeal(Client client) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.selectShiftType, client);
+		commonFuncMobile.waitFor(3);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.mealBreak, client);
+	}
+	public void clickOnShiftType(Client client) {
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.selectShiftType, client);
+		commonFuncMobile.waitFor(3);
+		commonFuncMobile.waitForElementClickable("NATIVE", ShiftOfferObjects.selectShift, client);
+	}//mealBreak
+	public void clickOnMainSegment(Client client) {
+		commonFuncMobile.waitFor(3);
+		if(client.isElementFound("NATIVE",ShiftOfferObjects.mainSegment ))
+			commonFuncMobile.clickButton("NATIVE", ShiftOfferObjects.mainSegment,"Login",client);
+		else
+			commonFuncMobile.clickButton("NATIVE", ShiftOfferObjects.mainSegmentForUat,"Login",client);
+	}
+	public void timeEditForSegment(String string,Client client) {
+		if(string.equals("Creation of Single Segment for Warning Rule Violation")) {
+			String startHour =(String)  OfferShiftSheetData.get("WarningRuleViloation_startHour_firstsegment").get(0);
+			String endHour =(String)  OfferShiftSheetData.get("WarningRuleViloation_endHour_firstsegment").get(0);
+			String startMinute =(String)  OfferShiftSheetData.get("WarningRuleViloation_startMinute_firstsegment").get(0);
+			String endMinute =(String)  OfferShiftSheetData.get("WarningRuleViloation_endMinute_firstsegment").get(0);
+			String startMeridian =(String)  OfferShiftSheetData.get("WarningRuleViloation_startMeridian_firstsegment").get(0);
+			String endMeridian =(String)  OfferShiftSheetData.get("WarningRuleViloation_endMeridian_firstsegment").get(0);
+			changeBaseAvailabilityTime(client,startHour,endHour,startMinute,endMinute,startMeridian,endMeridian);
+		}
+		else if(string.equals("Creation of Three Segments for No Rule Violation")) {
+			String startHour =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_firstsegment").get(0);
+			String startMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_firstsegment").get(0);
+			String endHour=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_firstsegment").get(0);
+			String endMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_firstsegment").get(0);
+			String startMeridian =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMeridian_firstsegment").get(0);
+			String endMeridian =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMeridian_firstsegment").get(0);
+			changeBaseAvailabilityTime(client,startHour,endHour,startMinute,endMinute,startMeridian,endMeridian);
+		}
+		else if(string.equals("Break Segment for No Rule Violation")) {
+			String startHour =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_breaksegment").get(0);
+			String startMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_breaksegment").get(0);
+			String endHour=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_breaksegment").get(0);
+			String endMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_breaksegment").get(0);
+			String startMeridian =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMeridian_breaksegment").get(0);
+			String endMeridian =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMeridian_breaksegment").get(0);
+			changeBaseAvailabilityTime(client,startHour,endHour,startMinute,endMinute,startMeridian,endMeridian);
+		}
+		else if(string.equals("Third Segment for No Rule Violation")) {
+			String startHour =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startHour_secondsegment").get(0);
+			String startMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMinute_secondsegment").get(0);
+			String endHour=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endHour_secondsegment").get(0);
+			String endMinute=(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMinute_secondsegment").get(0);
+			String startMeridian =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_startMeridian_secondsegment").get(0);
+			String endMeridian =(String)  OfferShiftSheetData.get("ShiftCreation For NoRule Violation_endMeridian_secondsegment").get(0);
+			changeBaseAvailabilityTime(client,startHour,endHour,startMinute,endMinute,startMeridian,endMeridian);
+		}
+
+	}
+	public  void changeBaseAvailabilityTime(Client client,String startHour,String endHour,String startMinutes,String endMinutes,String startMeridian,String endMeridian) {
+		String xpath1,xpath;
+		commonFuncMobile.clickButton("NATIVE", ShiftOfferObjects.startTime,"Login",client);
+		String oldStartTime = commonFuncMobile.getTextDynamic("NATIVE", ShiftOfferObjects.editStartHour,0,client);
+		System.out.println("oldStartTime"+oldStartTime);
+		String editHour = commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.editStartHour,oldStartTime);
+		commonFuncMobile.clickButton("NATIVE",editHour,"Login",client);
+		String hoursTotalCount=startHour+""+startMinutes;
+		System.out.println("============="+hoursTotalCount);
+		char[] charHours = hoursTotalCount.toCharArray();
+		if (hoursTotalCount.length() >= 2) {
+
+			for (int i = 0; i < charHours.length; i++) {
+				System.out.println("============="+charHours[i]);
+				xpath = commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.editingTimeKeyBoard, charHours[i] + "");
+				if (client.waitForElement("NATIVE", xpath, 0, 10000))
+				{
+					commonFuncMobile.clickButton("NATIVE", xpath, "Login", client);
+					System.out.println("Element found and clicked: " + xpath);
+				} else {
+					System.out.println("Element not found: " + xpath);
+				}
+			}
+		} 
+
+		String text = commonFuncMobile.getText("NATIVE",ShiftOfferObjects. AmPmTimeText,client);
+		if(text.equals(startMeridian)||text.equals(startMeridian.toLowerCase())) {
+
+		}
+		else {
+			if(text.equals("AM")|| text.equals("am")) {
+				client.elementSwipe("NATIVE",ShiftOfferObjects. AmPmTimeText, 0, "Down", 600, 1000);
+			}
+			else {
+				client.elementSwipe("NATIVE",ShiftOfferObjects. AmPmTimeText, 0, "Up", 600, 1000);
+			}
+		}
+		boolean bool=elementFound(ShiftOfferObjects.segmentText,client);
+		if(bool) {
+			if (client.waitForElement("NATIVE",  ShiftOfferObjects.segmentText, 0, 10000)) {
+				commonFuncMobile.clickButton("NATIVE",  ShiftOfferObjects.segmentText, "Login", client);
+			}
+		}
+		else {
+			if (client.waitForElement("NATIVE",  ShiftOfferObjects.createsegmentText, 0, 10000)) {
+				commonFuncMobile.clickButton("NATIVE",  ShiftOfferObjects.createsegmentText, "Login", client);
+			}
+		}
+		String endhoursTotalCount=endHour+""+endMinutes;
+
+		if (client.waitForElement("NATIVE",  ShiftOfferObjects.endTime, 0, 10000)) {
+			commonFuncMobile.clickButton("NATIVE",  ShiftOfferObjects.endTime, "Login", client);
+		}
+		String oldEndTime = commonFuncMobile.getTextDynamic("NATIVE", ShiftOfferObjects.editStartHour,0,client);
+		System.out.println("oldStartTime"+oldEndTime);
+		String editEndHour = commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.editStartHour,oldEndTime);
+		commonFuncMobile.clickButton("NATIVE",editEndHour,"Login",client);
+
+		char[] endcharHours = endhoursTotalCount.toCharArray();
+		if (endhoursTotalCount.length() >= 2) {
+			for (int i = 0; i <endcharHours.length ; i++) {
+				xpath = commonFuncMobile.replaceDynamicValue( ShiftOfferObjects.editingTimeKeyBoard, endcharHours[i] + "");
+				if (client.waitForElement("NATIVE", xpath, 0, 10000)) {
+					commonFuncMobile.clickButton("NATIVE", xpath, "Login", client);
+				} else {
+					System.out.println("Element not found: " + xpath);
+				}
+			}
+		} 
+
+		text = commonFuncMobile.getText("NATIVE",ShiftOfferObjects. AmPmTimeText,client);
+		if(text.equals(endMeridian)||text.equals(endMeridian.toLowerCase())) {
+
+		}
+		else {
+			if(text.equals("AM")|| text.equals("am")) {
+				client.elementSwipe("NATIVE",ShiftOfferObjects. AmPmTimeText, 0, "Down", 600, 1000);
+			}
+			else {
+				client.elementSwipe("NATIVE",ShiftOfferObjects. AmPmTimeText, 0, "Up", 600, 1000);
+			}
+		}
+		bool=elementFound(ShiftOfferObjects.segmentText,client);
+		if(bool) {
+			if (client.waitForElement("NATIVE",  ShiftOfferObjects.segmentText, 0, 10000)) {
+				commonFuncMobile.clickButton("NATIVE",  ShiftOfferObjects.segmentText, "Login", client);
+			}
+		}
+		else {
+			if (client.waitForElement("NATIVE",  ShiftOfferObjects.createsegmentText, 0, 10000)) {
+				commonFuncMobile.clickButton("NATIVE",  ShiftOfferObjects.createsegmentText, "Login", client);
+			}
+		}
+
+	}
+}
