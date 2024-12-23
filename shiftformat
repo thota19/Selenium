@@ -1,0 +1,54 @@
+I am having few of the step definition methods. For these step definitions i want to add few lines , only if they are not present .
+
+point 1 : 
+ Every step definition method should have "e.printStackTrace();" statement before the the "Assert.fail();" line.
+
+
+Point number 2 :
+
+pass and failed create node should contain this : ", 
+		                        MediaEntityBuilder.createScreenCaptureFromBase64String(img).build());"
+
+Point number 3:
+This line "String img =commonFuncMobile.CaptureMobileScreenshot("VerisionValidationPass",client);  " should be there before pass and failed scenario nodes
+
+Ex:
+	@Given("I am checking present version of device for {string}")
+	public void checkversionPhone(String string) throws ClassNotFoundException, IOException {
+		String version="";
+		try {
+			if(string.equals("Android")) {
+				//commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.navBar, client);
+				client.swipeWhileNotFound("Down", 1200, 2000, "NATIVE", AvailabilityObjects.help, 0, 1000, 3, false);
+				commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.androidsettings, client);
+				version=commonFuncMobile.getText("NATIVE",AvailabilityObjects.androidversion ,client);
+				commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.androidbackSideNavBar, client);
+				client.swipeWhileNotFound("Up", 1200, 2000, "NATIVE", AvailabilityObjects. Schedule, 0, 1000, 3, true);
+			}
+			else {
+				commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.more, client);
+				commonFuncMobile.waitForElementClickable("NATIVE", AvailabilityObjects.settings, client);
+				if(client.isElementFound("NATIVE",AvailabilityObjects. versionMobile)) {
+					version=commonFuncMobile.getText("NATIVE",AvailabilityObjects. versionMobile ,client);
+				}
+
+			}
+			String img =commonFuncMobile.CaptureMobileScreenshot("VerisionValidationPass",client);  
+			
+			
+				scenario.createNode(new GherkinKeyword("Given"),
+		                "Checking version for Device is ")
+		                .pass("version of "+string+" device is "+version,
+		                        MediaEntityBuilder.createScreenCaptureFromBase64String(img).build());
+
+			//scenario.createNode(new GherkinKeyword("Then"), "Checking version for Device is ").pass("version of "+string+" device is "+version); 
+
+		}catch(Exception e) {
+			String img =commonFuncMobile.CaptureMobileScreenshot("VerisionValidationFail",client);  	
+		scenario.createNode(new GherkinKeyword("Then"), "Checking version for Device is ").fail("I am not able to fetch version of "+string+" device", MediaEntityBuilder.createScreenCaptureFromBase64String(img).build()); 
+	e.printStackTrace();
+		Assert.fail();
+	
+		}
+
+	}
